@@ -360,7 +360,10 @@ public class Gui {
     {
         
         flip=!flip;
-        draw_board();
+        
+        restart_engine=false;
+        
+        check_engine_after_making_move();
         
     }
     
