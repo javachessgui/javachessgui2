@@ -942,6 +942,7 @@ public class Gui {
             MyFile my_file=new MyFile(last_open_pgn_path);
 
             game.set_flip=true;
+            game.flip=flip;
             game.calc_pgn();
 
             my_file.content=game.pgn;
@@ -1013,6 +1014,7 @@ public class Gui {
                         MyFile my_file=new MyFile(path);
 
                         game.set_flip=true;
+                        game.flip=flip;
                         game.calc_pgn();
 
                         my_file.content=game.pgn;
