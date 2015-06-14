@@ -1,0 +1,58 @@
+package javachessgui2;
+
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.scene.Group;
+
+public class MyModal {
+    
+    private Stage modal_stage;
+    
+    public void close()
+    {
+        modal_stage.close();
+    }
+    
+    public void show_and_wait()
+    {
+        modal_stage.showAndWait();
+    }
+    
+    public void setxy(int x,int y)
+    {
+        modal_stage.setX(x);
+        modal_stage.setY(y);
+    }
+    
+    public void setwh(int w,int h)
+    {
+        modal_stage.setMaxWidth(w);
+        modal_stage.setMinWidth(w);
+        modal_stage.setMaxHeight(h);
+        modal_stage.setMinHeight(h);
+    }
+    
+    public void setxywh(int x,int y,int w,int h)
+    {
+        setxy(x,y);
+        setwh(w,h);
+    }
+    
+    public MyModal(Group modal_group,String title)
+    {
+        
+        modal_stage=new Stage();
+        
+        Scene modal_scene=new Scene(modal_group);
+        
+        modal_stage.initModality(Modality.APPLICATION_MODAL);
+
+        modal_stage.setTitle(title);
+        modal_stage.setScene(modal_scene);
+        
+    }
+    
+}

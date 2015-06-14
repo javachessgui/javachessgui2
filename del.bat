@@ -1,0 +1,2 @@
+copy *.ser dist
+pause
