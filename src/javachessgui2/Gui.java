@@ -1443,6 +1443,8 @@ public class Gui {
         board_controls_box.setMinWidth(board_size);
         board_controls_box.setMaxWidth(board_size);
         
+        //board_pane_vertical_box.setStyle("-fx-background-color: "+current_style.colors[BoardStyle.BOARD_COLOR]);
+        
     }
     
     static int calc_board_size(int set_piece_size)
