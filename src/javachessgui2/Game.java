@@ -596,7 +596,7 @@ public class Game {
                 current_node=save;
                 
             }
-            else if(token.contains(".")||token.contains("*"))
+            else if(token.contains(".")||token.contains("*")||token.contains("1-")||token.contains("0-")||token.contains("2-"))
             {
                 // does not look a move
                 //System.out.println(token+" does not look a move: ");
