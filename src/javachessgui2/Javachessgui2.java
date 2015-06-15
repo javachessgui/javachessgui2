@@ -32,6 +32,11 @@ public class Javachessgui2 extends Application{
         message_text.setText(what);
         message_text.setStyle("-fx-opacity: 1;"+message_text_style);
         message_text.toFront();
+        
+        message_text.setMinHeight(Gui.board_size);
+        message_text.setMaxHeight(Gui.board_size);
+        message_text.setMinWidth(Gui.board_size);
+        message_text.setMaxWidth(Gui.board_size);
                 
         Thread system_message_thread=new Thread(new Runnable()
         {
@@ -84,11 +89,6 @@ public class Javachessgui2 extends Application{
         message_text.setStyle("-fx-opacity: 0;"+message_text_style);
         
         Gui.root.getChildren().add(message_text);
-        
-        message_text.setMinHeight(Gui.board_size);
-        message_text.setMaxHeight(Gui.board_size);
-        message_text.setMinWidth(Gui.board_size);
-        message_text.setMaxWidth(Gui.board_size);
         
         system_message("Welcome!",3000);
         

@@ -726,14 +726,18 @@ public class Gui {
         String pgn=clip.getString();
         game.set_from_pgn_tree(pgn);
         
+        clip_info(pgn,false);
+        
         check_engine_after_making_move();
     }
     
     static void pgn_to_clip()
     {
         ClipboardContent content = new ClipboardContent();
-        content.putString(game.calc_pgn_tree());
+        String pgn=game.calc_pgn_tree();
+        content.putString(pgn);
         clip.setContent(content);
+        clip_info(pgn,true);
     }
     
     static void clip_to_fen()
@@ -744,14 +748,18 @@ public class Gui {
         String fen=clip.getString();
         game.set_from_fen(fen);
         
+        clip_info(fen,false);
+        
         check_engine_after_making_move();
     }
     
     static void fen_to_clip()
     {
         ClipboardContent content = new ClipboardContent();
-        content.putString(game.board.report_fen());
+        String fen=game.board.report_fen();
+        content.putString(fen);
         clip.setContent(content);
+        clip_info(fen,true);
     }
     
     static MyModal setup_board_modal;
@@ -1028,6 +1036,15 @@ public class Gui {
         game_list.getSelectionModel().select(0);
         
         check_engine_after_making_move();
+    }
+    
+    static void clip_info(String content,Boolean to)
+    {
+        Javachessgui2.system_message("Content copied "+
+                (to?"to":"from")+
+                " clipboard:\n\n"+
+                content
+                ,4000);
     }
     
     static void save_pgn()
