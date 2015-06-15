@@ -45,8 +45,6 @@ class GameNode
 
 public class Game {
     
-    public Book book=new Book("book");
-    
     public String pgn;
     
     public Boolean flip=false;
@@ -98,8 +96,6 @@ public class Game {
         Move m=board.san_to_move(san);
         
         board.make_move(m);
-        
-        book.add_move(current_node.fen, san);
         
         GameNode move_node=(GameNode)current_node.child_nodes.get(san);
         

@@ -107,7 +107,7 @@ public class Book {
         
     }
     
-    private Hashtable get_pos(String fen)
+    public Hashtable get_pos(String fen)
     {
 
         fen=Board.fen_to_raw(fen);
@@ -173,6 +173,7 @@ public class Book {
     }
     
     String[] notation_list={"!!  winning","!   strong","!?  promising","-   stable","?!  interesting","?   bad","??  losing"};
+    String[] notation_list_short={"??","?","?!","-","!?","!","!!"};
     
     public int no_book_moves;
     public ArrayList<BookMove> book_list;
@@ -216,7 +217,7 @@ public class Book {
             String notation_as_string="N/A";
             if(temp.notation>=0)
             {
-                notation_as_string=notation_list[temp.notation];
+                notation_as_string=notation_list_short[temp.notation];
             }
 
             String eval="_";

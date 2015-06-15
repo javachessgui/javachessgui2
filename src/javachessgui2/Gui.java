@@ -46,6 +46,76 @@ import javafx.util.Callback;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+class AnnotationFormatCell extends ListCell<String> {
+    
+    public static Color get_color(String item)
+    {
+        
+        item=" "+item+" ";
+        
+        if(item.contains(" !! "))
+        {
+             return(Color.GREEN);
+        }
+        else if(item.contains(" ! "))
+        {
+             return(Color.DARKGREEN);
+        }
+        else if(item.contains(" ?? "))
+        {
+             return(Color.RED);
+        }
+        else if(item.contains(" ? "))
+        {
+             return(Color.DARKRED);
+        }
+        else if(item.contains(" !? "))
+        {
+             return(Color.DARKBLUE);
+        }
+        else if(item.contains(" ?! "))
+        {
+             return(Color.LIGHTBLUE);
+        }
+        else if(item.contains(" - "))
+        {
+             return(Color.BLACK);
+        }
+        
+        return(Color.GRAY);
+         
+    }
+
+     public AnnotationFormatCell() {    }
+       
+     @Override protected void updateItem(String item, boolean empty) {
+         // calling super here is very important - don't skip this!
+         super.updateItem(item, empty);
+         
+         setText(item);
+         
+         if(item==null)
+         {
+             return;
+         }
+         
+         Color c=get_color(item);
+         
+         if(!c.equals(Color.GRAY))
+         {
+             setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+         }
+         else
+         {
+             setStyle("-fx-font-size: 20px;");
+         }
+         
+         setTextFill(c);
+         
+         
+         }
+     }
+
 class GameListFormatCell extends ListCell<String> {
     
     public static Color get_color(String item)
@@ -239,10 +309,13 @@ class MyButton extends Button {
 
 public class Gui {
     
+    public static Book book=new Book("book");
+    
     static int legal_move_list_width=60;
     static int game_move_list_width=100;
+    static int book_list_width=200;
     static int hbox_padding=2;
-    static int move_lists_width=legal_move_list_width+game_move_list_width+hbox_padding;
+    static int move_lists_width=legal_move_list_width+game_move_list_width+book_list_width+2*hbox_padding;
     static int engine_text_area_width=200;
     static int bottom_bar_height=120;
     
@@ -260,6 +333,7 @@ public class Gui {
     
     static ListView<String> legal_move_list = new ListView<String>();
     static ListView<String> game_list = new ListView<String>();
+    static ListView<String> book_list = new ListView<String>();
     
     private static TextField fen_text;
     
@@ -1263,6 +1337,10 @@ public class Gui {
         game_list.getSelectionModel().select(game.move_ptr);
         game_list.scrollTo(game.move_ptr);
         
+        book.update_book(game.board.report_fen());
+        
+        book_list.setItems(book.items);
+        
         draw_board();
      
     }
@@ -1272,7 +1350,12 @@ public class Gui {
         
         check_engine_before_making_move();
         
+        String fen=game.board.report_fen();
+        String san=game.board.to_san(m);
+        
         game.make_move(m);
+        
+        book.add_move(fen, san);
         
         check_engine_after_making_move();
     }
@@ -1282,7 +1365,11 @@ public class Gui {
         
         check_engine_before_making_move();
         
+        String fen=game.board.report_fen();
+        
         game.make_san_move(san);
+        
+        book.add_move(fen, san);
         
         check_engine_after_making_move();
     }
@@ -1466,6 +1553,10 @@ public class Gui {
         game_list.setMaxHeight(board_size);
         game_list.setMinWidth(game_move_list_width);
         game_list.setMaxWidth(game_move_list_width);
+        book_list.setMinHeight(board_size);
+        book_list.setMaxHeight(board_size);
+        book_list.setMinWidth(book_list_width);
+        book_list.setMaxWidth(book_list_width);
         
         board_controls_box.setMinWidth(board_size);
         board_controls_box.setMaxWidth(board_size);
@@ -1847,6 +1938,17 @@ public class Gui {
         moves_hbox.getChildren().add(legal_move_list);
         moves_hbox.getChildren().add(game_list);
         
+        book_list.setStyle("-fx-font-family: monospace;-fx-font-size: 18px;");
+        book_list.setOnMouseClicked(mouseHandlerBook);
+        book_list.setCellFactory(new Callback<ListView<String>, ListCell<String>>()
+            {
+                @Override public ListCell<String> call(ListView<String> list) {
+                    return new AnnotationFormatCell();
+                }
+            });
+        
+        moves_hbox.getChildren().add(book_list);
+        
         moves_vbox.getChildren().add(moves_hbox);
         moves_vbox.getChildren().add(engine_text_area);
         
@@ -1925,6 +2027,146 @@ public class Gui {
         
         
     }
+    
+    static Group select_notation_group;
+    static ListView<String> select_notation_list;
+
+    static MyModal modal;
+
+    private static void create_select_notation_group()
+    {
+        select_notation_group=new Group();
+
+        select_notation_list=new ListView<String>();
+
+        select_notation_list.setStyle("-fx-font-family: monospace;");
+
+        select_notation_list.setMinWidth(280);
+        select_notation_list.setMaxWidth(280);
+        select_notation_list.setMinHeight(260);
+        select_notation_list.setMaxHeight(260);
+
+        ObservableList<String> select_notation_items =FXCollections.observableArrayList(
+                book.notation_list
+        );
+
+        select_notation_list.setItems(select_notation_items);
+
+        select_notation_list.setCellFactory(new Callback<ListView<String>, ListCell<String>>()
+        {
+            @Override public ListCell<String> call(ListView<String> list) {
+                return new AnnotationFormatCell();
+            }
+        });
+
+        select_notation_group.getChildren().add(select_notation_list);
+    }
+    
+    static int selected_notation;
+    private static void select_notation_for(String san)
+    {
+        
+        String fen_before=game.board.report_fen();
+        
+        Hashtable pos=book.get_pos(fen_before);
+
+        if(pos.get(san)==null)
+        {
+            BookMove new_book_move=new BookMove(san);
+            new_book_move.count=1;
+            pos.put(san,new_book_move.report_hash());
+        }
+        else
+        {
+            BookMove old_book_move=new BookMove(san);
+            old_book_move.set_from_hash((Hashtable)pos.get(san));
+
+            // obtain new notation
+
+            create_select_notation_group();
+
+            modal=new MyModal(select_notation_group,"Select");
+
+            select_notation_list.setOnMouseClicked(new EventHandler<Event>() {
+
+                @Override
+                public void handle(Event event) {
+
+                    selected_notation=
+                            book.notation_list_short.length-1-
+                            select_notation_list.getSelectionModel().getSelectedIndex()
+                    ;
+
+                    modal.close();
+                }
+
+            });
+
+            selected_notation=old_book_move.notation;
+
+            modal.show_and_wait();
+
+            // end obtain new notation
+
+            old_book_move.notation=selected_notation;
+
+            pos.put(san,old_book_move.report_hash());
+
+            book.store_pos(fen_before,pos);
+
+        }
+
+        //book_file.from_hash(book);
+
+        update_game();
+        
+    }
+    
+    static int sel_book_move;
+    private static EventHandler<MouseEvent> mouseHandlerBook = new EventHandler<MouseEvent>() {
+ 
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                
+                int x=(int)mouseEvent.getX();
+                int y=(int)mouseEvent.getY();
+                
+                String type=mouseEvent.getEventType().toString();
+
+                if(type.equals("MOUSE_CLICKED"))
+                {
+                    
+                    int j=book_list.getSelectionModel().getSelectedIndex();
+                    
+                    sel_book_move=j;
+                    
+                    int size=book.book_list.size();
+                    
+                    if((j>=0)&&(j<size))
+                    {
+                        
+                        String san=book.book_list.get(j).san;
+                        
+                        if(x<120)
+                        {
+                            
+                            make_san_move(san);
+                            
+                        }
+                        else
+                        {
+                            
+                            select_notation_for(san);
+                            
+                        }
+                        
+                    }
+                            
+                }
+
+            }
+        
+        };
     
     static Boolean valid_index(int index,int max)
     {
