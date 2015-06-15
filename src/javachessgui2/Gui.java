@@ -238,8 +238,8 @@ class BoardStyle implements java.io.Serializable
         "#FFFFFF",
         "#000000",
         "#000000",
-        "#AFDFAF",
-        "#7FAF7F",
+        "#FFFFFF",
+        "#FFFFFF",
         "#7F7F7F",
         "#7F7F7F"
     };
@@ -267,12 +267,12 @@ class BoardStyle implements java.io.Serializable
     
     final static int NUM_CHECKS=3;
     
-    public Boolean[] checks={false,true,true};
+    public Boolean[] checks={true,true,true};
     
     final static int PADDING_PERCENT=0;
     final static int INNER_PADDING_PERCENT=1;
     
-    public int[] sliders={10,10};
+    public int[] sliders={8,0};
     
     public BoardStyle()
     {
