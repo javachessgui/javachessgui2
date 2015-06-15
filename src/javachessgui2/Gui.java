@@ -1239,6 +1239,8 @@ public class Gui {
     {
         check_engine_before_making_move();
         
+        game.calc_game_to_end();
+        
         game.jump_to(game.calc_ptr-1);
         game_list.getSelectionModel().select(game.calc_ptr-1);
         
@@ -2253,6 +2255,8 @@ public class Gui {
             @Override public void handle(Event event) {
 
                 int selected =  game_list.getSelectionModel().getSelectedIndex();
+                
+                game.calc_game_to_end();
                 
                 if(valid_index(selected,game.calc_ptr))
                 {

@@ -175,6 +175,7 @@ public class Game {
         while((calc_node=calc_node.parent_node)!=null)
         {
          
+            calc_node.mainline=true;
             build.add(0,calc_node);
             
             move_ptr++;
