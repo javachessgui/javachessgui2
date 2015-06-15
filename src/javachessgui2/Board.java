@@ -26,6 +26,13 @@ class MoveDescriptor {
 
 public class Board {
     
+    public static String fen_to_raw(String fen)
+    {
+        String raw_fen=fen.replaceAll(" [^ ]+ [^ ]+$", "");
+        
+        return raw_fen;
+    }
+    
     final static int all_pieces[]={Piece.KING,Piece.QUEEN,Piece.ROOK,Piece.BISHOP,Piece.KNIGHT,Piece.PAWN};
     
     private int turn_of(Piece p)
