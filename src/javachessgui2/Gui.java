@@ -291,6 +291,8 @@ public class Gui {
     static MyButton reset_button;
     static MyButton clip_to_fen_button;
     static MyButton fen_to_clip_button;
+    static MyButton clip_to_pgn_button;
+    static MyButton pgn_to_clip_button;
     static MyButton back_button;
     static MyButton forward_button;
     static MyButton del_button;
@@ -643,11 +645,28 @@ public class Gui {
         check_engine_after_making_move();
     }
     
+    static void clip_to_pgn()
+    {
+        stop_engine();
+        
+        
+        check_engine_after_making_move();
+    }
+    
+    static void pgn_to_clip()
+    {
+        
+    }
+    
     static void clip_to_fen()
     {
+        
+        stop_engine();
+        
         String fen=clip.getString();
         game.set_from_fen(fen);
-        update_game();
+        
+        check_engine_after_making_move();
     }
     
     static void fen_to_clip()
@@ -1088,6 +1107,8 @@ public class Gui {
         if(source==reset_button){reset();}
         if(source==clip_to_fen_button){clip_to_fen();}
         if(source==fen_to_clip_button){fen_to_clip();}
+        if(source==clip_to_pgn_button){clip_to_pgn();}
+        if(source==pgn_to_clip_button){pgn_to_clip();}
         if(source==forward_button){forward();}
         if(source==back_button){back();}
         if(source==del_button){del();}
@@ -1730,9 +1751,9 @@ public class Gui {
         
         clip_to_fen_button=new MyButton("Clip->Fen");
         fen_to_clip_button=new MyButton("Fen->Clip");
-        go_button=new MyButton("Go");
-        make_button=new MyButton("Make");
-        stop_button=new MyButton("Stop");
+        clip_to_pgn_button=new MyButton("Clip->PGN");
+        pgn_to_clip_button=new MyButton("PGN->Clip");
+        
         Image imageSave = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/save.bmp"));
         Image imageOpen = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/open.bmp"));
         Image imageDel = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/del.bmp"));
@@ -1743,6 +1764,12 @@ public class Gui {
         Image imageOptions = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/options.bmp"));
         Image imageFlip = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/flip.bmp"));
         Image imageReset = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/reset.bmp"));
+        Image imageStart = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/start.bmp"));
+        Image imageStop = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/stop.bmp"));
+        Image imageMake = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/make.bmp"));
+        go_button=new MyButton("",new ImageView(imageStart));
+        make_button=new MyButton("",new ImageView(imageMake));
+        stop_button=new MyButton("",new ImageView(imageStop));
         flip_button=new MyButton("",new ImageView(imageFlip));
         flip_button.setStyle("-fx-background-color: transparent;");
         style_button=new MyButton("",new ImageView(imageOptions));
@@ -1766,7 +1793,7 @@ public class Gui {
         
         Slider board_size_slider=new Slider();
         
-        board_size_slider.setMin(250);
+        board_size_slider.setMin(300);
         board_size_slider.setMax(600);
         board_size_slider.setMaxWidth(50);
         
@@ -1803,6 +1830,8 @@ public class Gui {
         board_controls_box.getChildren().add(make_button);
         board_controls_box.getChildren().add(save_pgn_button);
         board_controls_box.getChildren().add(save_pgn_as_button);
+        board_controls_box.getChildren().add(clip_to_pgn_button);
+        board_controls_box.getChildren().add(pgn_to_clip_button);
         
         
         board_pane_vertical_box.getChildren().add(board_controls_box);
