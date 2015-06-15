@@ -295,6 +295,7 @@ public class Game {
     {
         board.reset();
         set_from_fen(board.report_fen());
+        pgn_header_hash=new Hashtable();
     }
     
     public void set_from_pgn_simple(String pgn)
