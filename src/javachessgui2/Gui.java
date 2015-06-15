@@ -724,6 +724,7 @@ public class Gui {
         stop_engine();
         
         String pgn=clip.getString();
+        
         game.set_from_pgn_tree(pgn);
         
         clip_info(pgn,false);
@@ -734,6 +735,7 @@ public class Gui {
     static void pgn_to_clip()
     {
         ClipboardContent content = new ClipboardContent();
+        game.set_flip=false;
         String pgn=game.calc_pgn_tree();
         content.putString(pgn);
         clip.setContent(content);
@@ -1362,6 +1364,7 @@ public class Gui {
         
         if(!engine.engine_running)
         {
+            game.set_flip=false;
             engine_text_area.setText(game.calc_pgn_tree());
                         
             engine_text_area.positionCaret(game.current_node.caret_index_from);
