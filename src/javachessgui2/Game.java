@@ -35,6 +35,9 @@ class GameNode
     Boolean mainline=true;
     Boolean primary=true;
     
+    int caret_index_from=0;
+    int caret_index_to=0;
+    
     public GameNode(String set_fen)
     {
         fen=set_fen;
@@ -124,7 +127,7 @@ public class Game {
         
     }
     
-    private void calc_game_to_end()
+    public void calc_game_to_end()
     {
         
         calc_ptr=0;
@@ -696,7 +699,16 @@ public class Game {
                 pgn+=board.fullmove_number+". .. ";
             }
         }
+        
+        GameNode what=list.get(0);
+        
+        what.caret_index_from=pgn.length();
+        
         pgn+=san+" ";
+        
+        what.caret_index_to=pgn.length();
+        
+        set_range(what,what.caret_index_from,what.caret_index_to);
         
         for(int i=1;i<list.size();i++)
         {
@@ -716,7 +728,15 @@ public class Game {
                 pgn+=board.fullmove_number+". .. ";
             }
             
+            what=list.get(i);
+            
+            what.caret_index_from=pgn.length();
+            
             pgn+=alt_san+" ";
+            
+            what.caret_index_to=pgn.length();
+            
+            set_range(what,what.caret_index_from,what.caret_index_to);
             
             make_san_move(alt_san);
             calc_pgn_tree_recursive(list.get(i),false);
@@ -733,6 +753,24 @@ public class Game {
         
     }
     
+    ArrayList<GameNode> click_list;
+    
+    void set_range(GameNode what,int from,int to)
+    {
+        if(from>click_list.size()-1)
+        {
+            for(int i=click_list.size();i<from;i++)
+            {
+                click_list.add(null);
+            }
+        }
+        for(int i=from;i<to;i++)
+        {
+            click_list.add(what);
+        }
+    }
+    
+    int caret_index;
     public String calc_pgn_tree()
     {
         Board dummy=new Board();
@@ -744,6 +782,7 @@ public class Game {
         int turn=dummy.turn;
 
         pgn="[FEN \""+initial_position+"\"]\n";
+        int fen_caret=pgn.length();
         //start_fen_end_index=pgn.length()-1;
         if(set_flip)
         {
@@ -773,6 +812,14 @@ public class Game {
         board.set_from_fen(nodes.fen);
                 
         //////////////////////////////////////////////////
+        
+        current_node.caret_index_from=0;
+        current_node.caret_index_to=fen_caret;
+        
+        click_list=new ArrayList<GameNode>();
+        set_range(current_node,0,fen_caret);
+        
+        caret_index=pgn.length();
         
         calc_pgn_tree_recursive(current_node,true);
         

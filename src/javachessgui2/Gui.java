@@ -888,12 +888,14 @@ public class Gui {
                              "\nbestmove "+engine.bestmove_algeb
                      );
 
-                     engine_text_area.setStyle("-fx-text-fill: rgb("
+                     engine_text_area.setStyle("-fx-display-caret: false;-fx-text-fill: rgb("
                          +color_r+","+color_g+","+color_b
                          +");"
                              
                      );
-
+                     
+                     engine_text_area.setWrapText(false);
+                     
                      engine_canvas_gc.clearRect(0,0,board_size,board_size);
 
                      if(engine.engine_running)
@@ -1340,6 +1342,18 @@ public class Gui {
         book.update_book(game.board.report_fen());
         
         book_list.setItems(book.items);
+        
+        if(!engine.engine_running)
+        {
+            engine_text_area.setText(game.calc_pgn_tree());
+                        
+            engine_text_area.positionCaret(game.current_node.caret_index_from);
+            engine_text_area.selectRange(game.current_node.caret_index_from, game.current_node.caret_index_to-1);
+            
+            engine_text_area.setWrapText(true);
+            engine_text_area.setStyle("-fx-display-caret: false;-fx-font-color: #000000;");
+            
+        }
         
         draw_board();
      
@@ -1950,6 +1964,9 @@ public class Gui {
         moves_hbox.getChildren().add(book_list);
         
         moves_vbox.getChildren().add(moves_hbox);
+        
+        engine_text_area.setOnMouseClicked(engineTextHandler);
+        
         moves_vbox.getChildren().add(engine_text_area);
         
         main_hbox.getChildren().add(moves_vbox);
@@ -2167,6 +2184,57 @@ public class Gui {
             }
         
         };
+    
+        private static EventHandler<MouseEvent> engineTextHandler = new EventHandler<MouseEvent>() {
+
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+
+            int x=(int)mouseEvent.getX();
+            int y=(int)mouseEvent.getY();
+
+            String type=mouseEvent.getEventType().toString();
+
+            if(type.equals("MOUSE_CLICKED"))
+            {
+                //System.out.println("Mouse clicked over pgn text at x="+x+" y="+y);
+
+                //System.out.println("caret position: "+pgn_text.getCaretPosition());
+                
+                if(engine.engine_running)
+                {
+                    return;
+                }
+
+                int click_index=engine_text_area.getCaretPosition();
+                
+                if(click_index<game.click_list.size())
+                {
+                    
+                    GameNode clicked=game.click_list.get(click_index);
+
+                    if(clicked!=null)
+                    {
+
+                        stop_engine();
+
+                        game.current_node=clicked;
+                        game.board.set_from_fen(game.current_node.fen);
+                        game.calc_game_to_end();
+
+                        check_engine_after_making_move();
+
+                    }
+                    
+                }
+                
+                
+                
+            }
+
+        }
+
+    };
     
     static Boolean valid_index(int index,int max)
     {
