@@ -423,6 +423,193 @@ public class Game {
 
     }
     
+    public void set_from_pgn_tree(String pgn)
+    {
+        pgn_lines = pgn.split("\\r?\\n");
+        set_from_pgn_lines_tree();
+    }
+    
+    public void set_from_pgn_lines_tree()
+    {
+
+        reset();
+
+        move_ptr=0;
+
+        pgn_header_hash.clear();
+
+        initial_position="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+        int line_cnt=0;
+
+        // read headers
+        int empty_cnt=0;
+
+        Boolean finished=false;
+
+        do
+        {
+            String line=pgn_lines[line_cnt++];
+
+            if(line_cnt<pgn_lines.length)
+            {
+                if(line.length()<2)
+                {
+                    finished=true;
+                }
+                else
+                {
+                    if(line.charAt(0)!='[')
+                    {
+                        finished=true;
+                    }
+                    else
+                    {
+
+                        // parse header fields
+
+                        Pattern get_header = Pattern.compile("\\[([^ ]+) \"([^\\\"]+)\\\"");
+                        Matcher header_matcher = get_header.matcher(line);
+
+                        if(header_matcher.find())
+                        {
+                            String key=header_matcher.group(1);
+                            String value=header_matcher.group(2);
+                            //System.out.println("key "+key+" value "+value);
+
+                            if(!key.equals("StartFen"))
+                            {
+                                pgn_header_hash.put(key,value);
+                            }
+
+                            // set initial position if any
+
+                            if(key.equals("FEN"))
+                            {
+                                initial_position=value;
+                            }
+
+                        }
+
+                    }
+                }
+            }
+            else
+            {
+                finished=true;
+            }
+
+        }while(!finished);
+        
+        flip_set=false;
+        Object flip_obj=pgn_header_hash.get("Flip");
+        if(flip_obj!=null)
+        {
+            flip_set=true;
+            flip=flip_obj.toString().equals("true")?true:false;
+        }
+
+        String body="";
+        while(line_cnt<pgn_lines.length)
+        {
+            String line=pgn_lines[line_cnt++];
+            if(line.length()<2)
+            {
+                break;
+            }
+            body+=line+" ";
+        }
+
+        // remove all comments, carriage return, line feed
+        body=body.replaceAll("\r|\n|\\{[^\\}]*\\}","");
+
+        //System.out.println("body: "+body);
+        
+        board.set_from_fen(initial_position);
+        nodes.fen=initial_position;
+
+        set_from_pgn_body_recursive(body);
+
+        current_node=nodes;
+        board.set_from_fen(nodes.fen);
+        calc_game_to_end();
+        
+        jump_to(calc_ptr-1);
+        
+    }
+    
+    private void set_from_pgn_body_recursive(String body)
+    {
+        MyTokenizer t=new MyTokenizer(body);
+
+        String token;
+
+        while((token=t.get_token())!=null)
+        {
+            
+            if(token.charAt(0)=='(')
+            {
+                String sub_body=token.substring(1)+" ";
+                
+                int level=1;
+                
+                do
+                {
+                    token=t.get_char();
+                    if(token!=null)
+                    {
+                        
+                        if(token.equals("("))
+                        {
+                            level++;
+                            sub_body+=token;
+                        }
+                        else if(token.equals(")"))
+                        {
+                            level--;
+                            if(level>0)
+                            {
+                                sub_body+=token;
+                            }
+                        }
+                        else
+                        {
+                            sub_body+=token;
+                        }
+                        
+                        if(level<=0)
+                        {
+                            break;
+                        }
+                        
+                    }
+                }while(token!=null);
+                
+                GameNode save=current_node;
+                Board dummy=board.clone();
+                
+                back();
+
+                set_from_pgn_body_recursive(sub_body);
+                
+                board.copy(dummy);
+                current_node=save;
+                
+            }
+            else if(token.contains(".")||token.contains("*"))
+            {
+                // does not look a move
+                //System.out.println(token+" does not look a move: ");
+            }
+            else
+            {
+                //System.out.println(token+" looks a move ");
+                make_san_move(token);
+            }
+
+        }
+    }
+    
     public String calc_pgn()
     {
         Board dummy=new Board();

@@ -649,6 +649,8 @@ public class Gui {
     {
         stop_engine();
         
+        String pgn=clip.getString();
+        game.set_from_pgn_tree(pgn);
         
         check_engine_after_making_move();
     }
