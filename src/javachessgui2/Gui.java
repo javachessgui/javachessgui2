@@ -1,15 +1,19 @@
 package javachessgui2;
 
 import java.io.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javafx.util.Callback;
+
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+
+import javafx.event.*;
+
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -21,32 +25,36 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ListCell;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.stage.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.ColorPicker;
-import javafx.event.*;
-import javafx.scene.layout.GridPane;
-import javafx.geometry.Insets;
-import javafx.scene.control.ListView;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javax.swing.JOptionPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.control.ListCell;
-import javafx.util.Callback;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-class AnnotationFormatCell extends ListCell<String> {
+import javafx.stage.*;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import javafx.geometry.Insets;
+
+import javax.swing.JOptionPane;
+
+class AnnotationFormatCell extends ListCell<String>
+{
     
     public static Color get_color(String item)
     {
@@ -86,37 +94,43 @@ class AnnotationFormatCell extends ListCell<String> {
          
     }
 
-     public AnnotationFormatCell() {    }
-       
-     @Override protected void updateItem(String item, boolean empty) {
-         // calling super here is very important - don't skip this!
-         super.updateItem(item, empty);
-         
-         setText(item);
-         
-         if(item==null)
-         {
-             return;
-         }
-         
-         Color c=get_color(item);
-         
-         if(!c.equals(Color.GRAY))
-         {
-             setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
-         }
-         else
-         {
-             setStyle("-fx-font-size: 20px;");
-         }
-         
-         setTextFill(c);
-         
-         
-         }
-     }
+    public AnnotationFormatCell()
+    {
+        
+    }
 
-class GameListFormatCell extends ListCell<String> {
+    @Override protected void updateItem(String item, boolean empty)
+    {
+        
+        // calling super here is very important - don't skip this!
+        super.updateItem(item, empty);
+
+        setText(item);
+
+        if(item==null)
+        {
+            return;
+        }
+
+        Color c=get_color(item);
+
+        if(!c.equals(Color.GRAY))
+        {
+            setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        }
+        else
+        {
+            setStyle("-fx-font-size: 20px;");
+        }
+
+        setTextFill(c);
+
+    }
+    
+}
+
+class GameListFormatCell extends ListCell<String>
+{
     
     public static Color get_color(String item)
     {
@@ -133,38 +147,44 @@ class GameListFormatCell extends ListCell<String> {
         {
              return(Color.GREEN);
         }
-        
          
     }
 
-     public GameListFormatCell() {    }
+    public GameListFormatCell()
+    {
+        
+    }
        
-     @Override protected void updateItem(String item, boolean empty) {
-         // calling super here is very important - don't skip this!
-         super.updateItem(item, empty);
-         
-         setText(item);
-         
-         if(item==null)
-         {
-             return;
-         }
-         
-         Color c=get_color(item);
-         
-         setTextFill(c);
-         
-         }
-     }
+    @Override protected void updateItem(String item, boolean empty) {
+        
+        // calling super here is very important - don't skip this!
+        super.updateItem(item, empty);
+
+        setText(item);
+
+        if(item==null)
+        {
+            return;
+        }
+
+        Color c=get_color(item);
+
+        setTextFill(c);
+
+    }
+    
+}
 
 class FxUtils
 {
     public static String toRGBCode( Color color )
     {
-        return String.format( "#%02X%02X%02X",
-            (int)( color.getRed() * 255 ),
+        return String.format(
+            "#%02X%02X%02X",
+            (int)( color.getRed()   * 255 ),
             (int)( color.getGreen() * 255 ),
-            (int)( color.getBlue() * 255 ) );
+            (int)( color.getBlue()  * 255 )
+        );
     }
 }
 
@@ -174,7 +194,7 @@ class Config implements java.io.Serializable
     
     String uci_engine_path=null;
     
-    String initial_dir;
+    String initial_dir=null;
     
     public Config()
     {
@@ -208,7 +228,9 @@ class BoardStyle implements java.io.Serializable
     public BoardStyle clone()
     {
         BoardStyle clone=new BoardStyle();
+        
         clone.copy(this);
+        
         return clone;
     }
     
@@ -234,7 +256,8 @@ class BoardStyle implements java.io.Serializable
     
     final static int NUM_COLORS=7;
     
-    public String colors[]={
+    public String colors[]=
+    {
         "#FFFFFF",
         "#000000",
         "#000000",
@@ -248,6 +271,7 @@ class BoardStyle implements java.io.Serializable
     
     public static int slider_mins[]={0,0};
     public static int slider_maxs[]={10,50};
+    
     public static String slider_labels[]={"Padding","Inner padding"};
     
     public Color colors(int i)
@@ -255,7 +279,8 @@ class BoardStyle implements java.io.Serializable
         return Color.web(colors[i]);
     }
     
-    final static String[] check_names={
+    final static String[] check_names=
+    {
         "Font only",
         "Do fill",
         "Do stroke"
@@ -278,6 +303,7 @@ class BoardStyle implements java.io.Serializable
     {
         
     }
+    
 }
 
 class MyButton extends Button {
@@ -297,7 +323,6 @@ class MyButton extends Button {
     
     public MyButton(String set_text,ImageView image)
     {
-        
         super(set_text,image);
         
         text=set_text;
@@ -311,11 +336,19 @@ public class Gui {
     
     public static Book book=new Book("book");
     
+    static int hbox_padding=2;
+    
     static int legal_move_list_width=60;
     static int game_move_list_width=100;
     static int book_list_width=200;
-    static int hbox_padding=2;
-    static int move_lists_width=legal_move_list_width+game_move_list_width+book_list_width+2*hbox_padding;
+    
+    static int move_lists_width=
+                                legal_move_list_width+
+                                game_move_list_width+
+                                book_list_width+
+                                2*hbox_padding
+                                ;
+    
     static int engine_text_area_width=200;
     static int bottom_bar_height=120;
     
@@ -332,7 +365,9 @@ public class Gui {
     static int margin_percent=10;
     
     static ListView<String> legal_move_list = new ListView<String>();
+    
     static ListView<String> game_list = new ListView<String>();
+    
     static ListView<String> book_list = new ListView<String>();
     
     private static TextField fen_text;
@@ -350,6 +385,7 @@ public class Gui {
     /////////////////////////////////////////////
     
     static FlowPane board_controls_box=new FlowPane();
+    
     static VBox board_pane_vertical_box=new VBox(2);
     
     static Group board_canvas_group;
@@ -464,11 +500,12 @@ public class Gui {
         {
             ComboBox load_style_combo = new ComboBox();
             
-            load_style_combo.setOnAction((Event ev) -> {
-            String path=load_style_combo.getSelectionModel().getSelectedItem().toString();    
-            read_in_style("boardstyles"+File.separator+path+".ser");
-            resize_target_board_size(config.target_board_size);
-            save_as_text.setText(path);
+            load_style_combo.setOnAction((Event ev) ->
+            {
+                String path=load_style_combo.getSelectionModel().getSelectedItem().toString();    
+                read_in_style("boardstyles"+File.separator+path+".ser");
+                resize_target_board_size(config.target_board_size);
+                save_as_text.setText(path);
             });
             
             for(int i=0;i<list.length;i++)
@@ -476,13 +513,14 @@ public class Gui {
                 Pattern get_name = Pattern.compile("([^\\"+File.separator+"\\.]+)\\.ser$");
                 Matcher get_name_matcher = get_name.matcher(list[i]);
 
-                if (get_name_matcher.find( )) {
+                if (get_name_matcher.find( ))
+                {
                    list[i]=get_name_matcher.group(1);
                 }
             }
             
             ObservableList<String> items =FXCollections.observableArrayList(
-            list
+                list
             );
             
             load_style_combo.setItems(items);
@@ -496,7 +534,6 @@ public class Gui {
             
             grid_cnt++;
 
-        
         }
         
         for(int i=0;i<BoardStyle.NUM_CHECKS;i++)
@@ -510,8 +547,11 @@ public class Gui {
         
             check.setSelected(current_style.checks[i]);
         
-            check.setOnAction(new EventHandler<ActionEvent>() {
-                @Override public void handle(ActionEvent event) {
+            check.setOnAction(new EventHandler<ActionEvent>()
+            {
+                
+                @Override public void handle(ActionEvent event)
+                {
                     
                     CheckBox chk = (CheckBox) event.getSource();
                     for(int i=0;i<BoardStyle.NUM_CHECKS;i++)
@@ -543,7 +583,7 @@ public class Gui {
                     }
                 }
                 
-                });
+            });
         
             setup_board_grid.setConstraints(check_label,0,grid_cnt);
             setup_board_grid.setConstraints(check,1,grid_cnt);
@@ -564,8 +604,11 @@ public class Gui {
 
             color_pickers[i]=colorPicker;
 
-            colorPicker.setOnAction(new EventHandler() {
-                public void handle(Event t) {
+            colorPicker.setOnAction(new EventHandler()
+            {
+                
+                public void handle(Event t)
+                {
                     for(int i=0;i<BoardStyle.NUM_COLORS;i++)
                     {
                         if(t.getSource()==color_pickers[i])
@@ -576,6 +619,7 @@ public class Gui {
                         }
                     }
                 }
+                
             });
 
             setup_board_grid.setConstraints(color_label,0,grid_cnt);
@@ -590,9 +634,10 @@ public class Gui {
         ComboBox comboBox = new ComboBox();
         
         comboBox.getItems().addAll("MERIFONTNEW.TTF","AVENFONT.TTF","LUCEFONT.TTF");
-        //comboBox.setValue("MERIFONTNEW.TTF");
         
-        comboBox.setOnAction((Event ev) -> {
+        comboBox.setOnAction((Event ev) ->
+        {
+            
             current_style.font=comboBox.getSelectionModel().getSelectedItem().toString();    
             resize_target_board_size(config.target_board_size);
             
@@ -609,7 +654,9 @@ public class Gui {
         
         for(int i=0;i<BoardStyle.NUM_SLIDERS;i++)
         {
+            
             sliders[i]=new Slider();
+            
             Label slider_label=new Label(BoardStyle.slider_labels[i]);
             
             setup_board_grid.getChildren().addAll(slider_label,sliders[i]);
@@ -633,29 +680,39 @@ public class Gui {
             
         }
         
-        sliders[0].valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> ov,
-                Number old_val, Number new_val) {
-                    current_style.sliders[0]=new_val.intValue();
-                    resize_target_board_size(config.target_board_size);
+        sliders[0].valueProperty().addListener(new ChangeListener<Number>()
+        {
+            
+            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val)
+            {
+                current_style.sliders[0]=new_val.intValue();
+                resize_target_board_size(config.target_board_size);
             }
+            
         });
         
-        sliders[1].valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> ov,
-                Number old_val, Number new_val) {
-                    current_style.sliders[1]=new_val.intValue();
-                    resize_target_board_size(config.target_board_size);
+        sliders[1].valueProperty().addListener(new ChangeListener<Number>()
+        {
+            
+            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val)
+            {
+                current_style.sliders[1]=new_val.intValue();
+                resize_target_board_size(config.target_board_size);
             }
+            
         });
         
         save_as_button=new Button("Save style as:");
         
-        save_as_button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override public void handle(ActionEvent event) {
+        save_as_button.setOnAction(new EventHandler<ActionEvent>()
+        {
+            
+                @Override public void handle(ActionEvent event)
+                {
                     String path="boardstyles"+File.separator+save_as_text.getText()+".ser";
                     MySerialize.write(path, current_style);
                 }
+                
         });
         
         save_as_text=new TextField();
@@ -669,22 +726,30 @@ public class Gui {
         
         Button ok_button=new Button("Ok");
         
-        ok_button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override public void handle(ActionEvent event) {
-                    String path="board_setup.ser";
-                    MySerialize.write(path, current_style);
-                    setup_board_modal.close();
-                }
+        ok_button.setOnAction(new EventHandler<ActionEvent>()
+        {
+            
+            @Override public void handle(ActionEvent event)
+            {
+                String path="board_setup.ser";
+                MySerialize.write(path, current_style);
+                setup_board_modal.close();
+            }
+            
         });
         
         Button cancel_button=new Button("Cancel");
         
-        cancel_button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override public void handle(ActionEvent event) {
+        cancel_button.setOnAction(new EventHandler<ActionEvent>()
+        {
+            
+                @Override public void handle(ActionEvent event)
+                {
                     setup_board_modal.close();
                     current_style=old_style;
                     resize_target_board_size(config.target_board_size);
                 }
+                
         });
         
         setup_board_grid.setConstraints(ok_button,0,grid_cnt);
@@ -705,13 +770,12 @@ public class Gui {
     static void stop_engine()
     {
         engine.stop();
+        
         restart_engine=false;
     }
     
-    
     static void reset()
     {
-        
         stop_engine();
         
         game.reset();
@@ -744,7 +808,6 @@ public class Gui {
     
     static void clip_to_fen()
     {
-        
         stop_engine();
         
         String fen=clip.getString();
@@ -774,7 +837,6 @@ public class Gui {
         old_style=current_style.clone();
         
         setup_board_modal.show_and_wait();
-        
         
     }
     
@@ -824,6 +886,7 @@ public class Gui {
         update_pgn();
         
         check_engine_after_making_move();
+        
     }
     
     static int color_r;
@@ -891,16 +954,17 @@ public class Gui {
                 {
                      
                      engine_text_area.setText(
-                             "depth "+engine.depth+
-                             "\npv "+engine.pv+
-                             "\nscore "+engine.score_verbal+
-                             "\nscore numerical "+engine.score_numerical+
-                             "\nbestmove "+engine.bestmove_algeb
+                            "depth "+engine.depth+
+                            "\npv "+engine.pv+
+                            "\nscore "+engine.score_verbal+
+                            "\nscore numerical "+engine.score_numerical+
+                            "\nbestmove "+engine.bestmove_algeb
                      );
 
-                     engine_text_area.setStyle("-fx-display-caret: false;-fx-text-fill: rgb("
-                         +color_r+","+color_g+","+color_b
-                         +");"
+                     engine_text_area.setStyle(
+                        "-fx-display-caret: false;-fx-text-fill: rgb("+
+                        color_r+","+color_g+","+color_b+
+                        ");"
                              
                      );
                      
@@ -951,6 +1015,7 @@ public class Gui {
             });
             
         }
+        
     }
     
     static Boolean restart_engine=false;
@@ -1011,6 +1076,7 @@ public class Gui {
     static void go()
     {
         engine.fen=game.board.report_fen();
+        
         engine.go();
     }
     
@@ -1021,7 +1087,6 @@ public class Gui {
     
     static void forward()
     {
-        
         check_engine_before_making_move();
         
         game.forward();
@@ -1030,8 +1095,7 @@ public class Gui {
     }
     
     static void begin()
-    {
-        
+    {   
         check_engine_before_making_move();
         
         game.jump_to(0);
@@ -1042,11 +1106,13 @@ public class Gui {
     
     static void clip_info(String content,Boolean to)
     {
-        Javachessgui2.system_message("Content copied "+
+        Javachessgui2.system_message(
+                "Content copied "+
                 (to?"to":"from")+
                 " clipboard:\n\n"+
-                content
-                ,4000);
+                content,
+                4000
+        );
     }
     
     static void save_pgn()
@@ -1069,7 +1135,9 @@ public class Gui {
 
             Javachessgui2.system_message(
                     "Saved to file: "+last_open_pgn_path+
-                    "\n\nContent:\n\n"+my_file.content,3000);
+                    "\n\nContent:\n\n"+my_file.content,
+                    3000
+            );
         }
     }
     
@@ -1103,11 +1171,11 @@ public class Gui {
         
         highlight_name_in_path();
         save_pgn_as_modal.show_and_wait();
-        
     }
     
     static Group create_save_pgn_as_group()
     {
+        
         Group save_pgn_as_group=new Group();
         
         save_pgn_as_text.setMinWidth(400);
@@ -1121,32 +1189,39 @@ public class Gui {
         save_pgn_as_ok_button.setTranslateX(350);
         save_pgn_as_ok_button.setTranslateY(30);
         
-        save_pgn_as_ok_button.setOnAction(new EventHandler<ActionEvent>() {
-                @Override public void handle(ActionEvent event) {
-                    
-                    String path=save_pgn_as_text.getText();
-                    
-                    if(path.length()>0)
-                    {
-                     
-                        MyFile my_file=new MyFile(path);
+        save_pgn_as_ok_button.setOnAction(new EventHandler<ActionEvent>()
+        {
+            
+            @Override public void handle(ActionEvent event)
+            {
 
-                        game.set_flip=true;
-                        game.flip=flip;
-                        game.calc_pgn_tree();
+                String path=save_pgn_as_text.getText();
 
-                        my_file.content=game.pgn;
-                        
-                        my_file.write_content();
-                        
-                        Javachessgui2.system_message(
-                                "Saved to file: "+path+
-                                "\n\nContent:\n\n"+my_file.content,3000);
-                        
-                    }
-                    
-                    save_pgn_as_modal.close();
+                if(path.length()>0)
+                {
+
+                    MyFile my_file=new MyFile(path);
+
+                    game.set_flip=true;
+                    game.flip=flip;
+                    game.calc_pgn_tree();
+
+                    my_file.content=game.pgn;
+
+                    my_file.write_content();
+
+                    Javachessgui2.system_message(
+                            "Saved to file: "+path+
+                            "\n\nContent:\n\n"+my_file.content,
+                            3000
+                    );
+
                 }
+
+                save_pgn_as_modal.close();
+                
+            }
+            
         });
         
         VBox save_pgn_as_vbox=new VBox();
@@ -1157,11 +1232,11 @@ public class Gui {
         save_pgn_as_group.getChildren().add(save_pgn_as_vbox);
         
         return save_pgn_as_group;
+        
     }
     
     static void end()
     {
-        
         check_engine_before_making_move();
         
         game.jump_to(game.calc_ptr-1);
@@ -1171,8 +1246,7 @@ public class Gui {
     }
     
     static void back()
-    {
-        
+    {   
         check_engine_before_making_move();
         
         game.back();
@@ -1181,8 +1255,7 @@ public class Gui {
     }
     
     static void del()
-    {
-        
+    {   
         check_engine_before_making_move();
         
         game.del();
@@ -1199,6 +1272,7 @@ public class Gui {
     
     public static void handle_button_pressed(ActionEvent e)
     {
+        
         MyButton source=(MyButton)e.getSource();
         
         if(source==flip_button){flip();}
@@ -1225,71 +1299,6 @@ public class Gui {
     
     static String[] sorted_sans;
     static int num_sans;
-    static void update_game_working()
-    {
-        game.board.list_legal_moves(null);
-
-        num_sans=game.board.legal_sans_cnt;
-        
-        sorted_sans=Arrays.copyOfRange(game.board.legal_sans, 0, num_sans);
-
-        Arrays.sort(sorted_sans);
-        
-        ObservableList<String> items =FXCollections.observableArrayList(
-            sorted_sans
-        );
-
-        legal_move_list.setItems(items);
-        
-        ArrayList<String> game_array_list=new ArrayList<String>();
-        
-        String start_fen=game.nodes.fen;
-        
-        Board dummy=new Board();
-        dummy.set_from_fen(start_fen);
-        
-        int fullmove_number=dummy.fullmove_number;
-        int turn=dummy.turn;
-        
-        for(int i=0;i<game.calc_ptr;i++)
-        {
-            String san=game.game[i].gen_san;
-            String number="";
-            if(i>0)
-            {
-                number=turn==Board.TURN_WHITE?""+fullmove_number+".":"    ...";
-                if(game.game[i].mainline)
-                {
-                    turn=-turn;
-                    if(turn==Board.TURN_WHITE)
-                    {
-                        fullmove_number++;
-                    }
-                }
-                else
-                {
-                    number="  -->  ";
-                }
-            }
-            game_array_list.add(san.equals("")?"*":number+" "+san);
-            
-        }
-        
-        String[] game_array=new String[game_array_list.size()];
-        game_array=game_array_list.toArray(game_array);
-        
-        items =FXCollections.observableArrayList(
-            game_array
-        );
-        
-        game_list.setItems(items);
-        
-        game_list.getSelectionModel().select(game.move_ptr);
-        
-        draw_board();
-        
-    }
-    
     
     static void update_game()
     {
@@ -1301,7 +1310,8 @@ public class Gui {
 
         Arrays.sort(sorted_sans);
         
-        ObservableList<String> items =FXCollections.observableArrayList(
+        ObservableList<String> items =FXCollections.observableArrayList
+        (
             sorted_sans
         );
 
@@ -1321,6 +1331,7 @@ public class Gui {
         
         for(int i=0;i<game.calc_ptr;i++)
         {
+            
             String san=game.game[i].gen_san;
             String number="";
             String branching="";
@@ -1344,6 +1355,7 @@ public class Gui {
                     branching=" *";
                 }
             }
+            
             game_array_list.add(san.equals("")?"*":number+" "+san+branching);
             
         }
@@ -1351,7 +1363,8 @@ public class Gui {
         String[] game_array=new String[game_array_list.size()];
         game_array=game_array_list.toArray(game_array);
         
-        items =FXCollections.observableArrayList(
+        items =FXCollections.observableArrayList
+        (
             game_array
         );
         
@@ -1366,6 +1379,7 @@ public class Gui {
         
         if(!engine.engine_running)
         {
+            
             game.set_flip=false;
             engine_text_area.setText(game.calc_pgn_tree());
                         
@@ -1382,8 +1396,7 @@ public class Gui {
     }
     
     public static void make_move(Move m)
-    {
-        
+    {   
         check_engine_before_making_move();
         
         String fen=game.board.report_fen();
@@ -1397,8 +1410,7 @@ public class Gui {
     }
     
     public static void make_san_move(String san)
-    {
-        
+    {   
         check_engine_before_making_move();
         
         String fen=game.board.report_fen();
@@ -1425,8 +1437,6 @@ public class Gui {
             int x=(int)mouseEvent.getX();
             int y=(int)mouseEvent.getY();
             String type=mouseEvent.getEventType().toString();
-            //System.out.println(type + " x " + x + " y " + y);
-            //System.out.println("i "+px_to_index(x)+" j "+px_to_index(y));
             
             if(type.equals("MOUSE_RELEASED"))
             {
@@ -1520,6 +1530,7 @@ public class Gui {
                     drag_canvas_gc.clearRect(0, 0, board_size, board_size);
                     put_piece_xy(drag_piece,x+drag_dx,y+drag_dy,drag_canvas_gc,0,0);
                 }
+                
             }
             
         }
@@ -1565,6 +1576,7 @@ public class Gui {
     static int stage_border_width_y=40;
     static void resize_target_board_size(int set_target_board_size)
     {
+        
         board_pane_vertical_box.getChildren().remove(0);
         
         set_target_board_size(set_target_board_size);
@@ -1597,19 +1609,18 @@ public class Gui {
         board_controls_box.setMinWidth(board_size);
         board_controls_box.setMaxWidth(board_size);
         
-        //board_pane_vertical_box.setStyle("-fx-background-color: "+current_style.colors[BoardStyle.BOARD_COLOR]);
-        
     }
     
     static int calc_board_size(int set_piece_size)
     {
-        return 2*set_piece_size*margin_percent/100+(
-                            2*set_piece_size*(
-                                current_style.sliders[BoardStyle.PADDING_PERCENT]+
-                                current_style.sliders[BoardStyle.INNER_PADDING_PERCENT]
-                            )/100+
-                            set_piece_size
-                        )*8;
+        return 2*set_piece_size*margin_percent/100+
+                (
+                    2*set_piece_size*(
+                        current_style.sliders[BoardStyle.PADDING_PERCENT]+
+                        current_style.sliders[BoardStyle.INNER_PADDING_PERCENT]
+                    )/100+
+                    set_piece_size
+                )*8;
     }
     
     static void set_target_board_size(int set_target_board_size)
@@ -1664,6 +1675,7 @@ public class Gui {
         board_canvas_group.setOnMouseReleased(board_canvas_handler);
         
         draw_board();
+        
     }
     
     /////////////////////////////////////////////
@@ -1822,6 +1834,7 @@ public class Gui {
     
     static void read_in_style(String path)
     {
+        
         Object o=MySerialize.read(path);
         
         if(o==null)
@@ -1834,238 +1847,6 @@ public class Gui {
         }
         
         current_style=(BoardStyle)o;
-        
-    }
-    
-    static VBox moves_vbox=new VBox();
-    static HBox moves_hbox=new HBox(hbox_padding);
-    public static void init(Stage set_gui_stage)
-    {
-        
-        HBox main_hbox=new HBox(hbox_padding);
-        
-        game.board.init_move_table();
-        
-        fen_text=new TextField();
-        
-        try
-        {
-            new File("boardstyles").mkdir();
-        }
-        catch(Exception e)
-        {
-            
-        }
-        
-        MyButton.button_pressed_handler=new EventHandler<ActionEvent>()
-        {
-            @Override public void handle(ActionEvent e)
-            {
-                handle_button_pressed(e);
-            }
-        };
-        
-        init_translit();
-
-        read_in_style("board_setup.ser");
-        read_in_config();
-        
-        set_target_board_size(config.target_board_size);
-        
-        gui_stage=set_gui_stage;
-        
-        gui_stage.setTitle("Chess GUI");
-        gui_stage.setScene(scene);
-        
-        board_pane_vertical_box.getChildren().add(board_canvas_group);
-        
-        
-        clip_to_fen_button=new MyButton("Clip->Fen");
-        fen_to_clip_button=new MyButton("Fen->Clip");
-        clip_to_pgn_button=new MyButton("Clip->PGN");
-        pgn_to_clip_button=new MyButton("PGN->Clip");
-        
-        Image imageSave = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/save.bmp"));
-        Image imageOpen = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/open.bmp"));
-        Image imageDel = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/del.bmp"));
-        Image imageBack = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/back.bmp"));
-        Image imageForward = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/forward.bmp"));
-        Image imageBegin = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/begin.bmp"));
-        Image imageEnd = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/end.bmp"));
-        Image imageOptions = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/options.bmp"));
-        Image imageFlip = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/flip.bmp"));
-        Image imageReset = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/reset.bmp"));
-        Image imageStart = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/start.bmp"));
-        Image imageStop = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/stop.bmp"));
-        Image imageMake = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/make.bmp"));
-        go_button=new MyButton("",new ImageView(imageStart));
-        make_button=new MyButton("",new ImageView(imageMake));
-        stop_button=new MyButton("",new ImageView(imageStop));
-        flip_button=new MyButton("",new ImageView(imageFlip));
-        flip_button.setStyle("-fx-background-color: transparent;");
-        style_button=new MyButton("",new ImageView(imageOptions));
-        style_button.setStyle("-fx-background-color: transparent;");
-        begin_button=new MyButton("",new ImageView(imageBegin));
-        begin_button.setStyle("-fx-background-color: transparent;");
-        end_button=new MyButton("",new ImageView(imageEnd));
-        end_button.setStyle("-fx-background-color: transparent;");
-        forward_button=new MyButton("",new ImageView(imageForward));
-        forward_button.setStyle("-fx-background-color: transparent;");
-        back_button=new MyButton("",new ImageView(imageBack));
-        back_button.setStyle("-fx-background-color: transparent;");
-        load_engine_button=new MyButton("Engine",new ImageView(imageOpen));
-        open_pgn_button=new MyButton("PGN",new ImageView(imageOpen));
-        save_pgn_as_button=new MyButton("PGN as",new ImageView(imageSave));
-        save_pgn_button=new MyButton("PGN",new ImageView(imageSave));
-        del_button=new MyButton("",new ImageView(imageDel));
-        del_button.setStyle("-fx-background-color: transparent;");
-        reset_button=new MyButton("",new ImageView(imageReset));
-        reset_button.setStyle("-fx-background-color: transparent;");
-        
-        Slider board_size_slider=new Slider();
-        
-        board_size_slider.setMin(300);
-        board_size_slider.setMax(600);
-        board_size_slider.setMaxWidth(50);
-        
-        board_size_slider.setValue(config.target_board_size);
-           
-        board_size_slider.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> ov,
-                Number old_val, Number new_val) {
-                    resize_target_board_size(new_val.intValue());
-            }
-        });
-        
-        board_controls_box.getChildren().add(board_size_slider);
-        
-        board_controls_box.getChildren().add(begin_button);
-        board_controls_box.getChildren().add(back_button);
-        board_controls_box.getChildren().add(forward_button);
-        board_controls_box.getChildren().add(end_button);
-        board_controls_box.getChildren().add(del_button);
-        
-        board_controls_box.getChildren().add(flip_button);
-        board_controls_box.getChildren().add(style_button);
-        
-        board_controls_box.getChildren().add(reset_button);
-        
-        board_controls_box.getChildren().add(clip_to_fen_button);
-        board_controls_box.getChildren().add(fen_to_clip_button);
-        
-        board_controls_box.getChildren().add(load_engine_button);
-        
-        board_controls_box.getChildren().add(open_pgn_button);
-        board_controls_box.getChildren().add(go_button);
-        board_controls_box.getChildren().add(stop_button);
-        board_controls_box.getChildren().add(make_button);
-        board_controls_box.getChildren().add(save_pgn_button);
-        board_controls_box.getChildren().add(save_pgn_as_button);
-        board_controls_box.getChildren().add(clip_to_pgn_button);
-        board_controls_box.getChildren().add(pgn_to_clip_button);
-        
-        
-        board_pane_vertical_box.getChildren().add(board_controls_box);
-        
-        board_pane_vertical_box.getChildren().add(fen_text);
-        
-        main_hbox.getChildren().add(board_pane_vertical_box);
-        
-        moves_hbox.getChildren().add(legal_move_list);
-        moves_hbox.getChildren().add(game_list);
-        
-        book_list.setStyle("-fx-font-family: monospace;-fx-font-size: 18px;");
-        book_list.setOnMouseClicked(mouseHandlerBook);
-        book_list.setCellFactory(new Callback<ListView<String>, ListCell<String>>()
-            {
-                @Override public ListCell<String> call(ListView<String> list) {
-                    return new AnnotationFormatCell();
-                }
-            });
-        
-        moves_hbox.getChildren().add(book_list);
-        
-        moves_vbox.getChildren().add(moves_hbox);
-        
-        engine_text_area.setOnMouseClicked(engineTextHandler);
-        
-        moves_vbox.getChildren().add(engine_text_area);
-        
-        main_hbox.getChildren().add(moves_vbox);
-        
-        legal_move_list.setMaxWidth(80);
-        legal_move_list.setMinWidth(80);
-        game_list.setMaxWidth(120);
-        game_list.setMinWidth(120);
-        
-        game_list.setCellFactory(new Callback<ListView<String>, ListCell<String>>()
-            {
-                @Override public ListCell<String> call(ListView<String> list) {
-                    return new GameListFormatCell();
-                }
-            });
-        
-        legal_move_list.setOnMouseClicked(new EventHandler<Event>() {
-
-            @Override
-            public void handle(Event event) {
-
-                int selected =  legal_move_list.getSelectionModel().getSelectedIndex();
-                
-                if(valid_index(selected,num_sans))
-                {
-                
-                    String san=sorted_sans[selected];
-
-                    make_san_move(san);
-
-                }
-                
-            }
-            
-        });
-        
-        game_list.setOnMouseClicked(new EventHandler<Event>() {
-
-            @Override
-            public void handle(Event event) {
-
-                int selected =  game_list.getSelectionModel().getSelectedIndex();
-                
-                if(valid_index(selected,game.calc_ptr))
-                {
-                    
-                    check_engine_before_making_move();
-                    
-                    game.calc_game_to_end();
-                
-                    game.jump_to(selected);
-                    
-                    check_engine_after_making_move();
-                    
-                }
-                
-            }
-            
-        });
-        
-        root.getChildren().add(main_hbox);
-        
-        update_game();
-        
-        resize_target_board_size(config.target_board_size);
-        
-        if(config.uci_engine_path!=null)
-        {
-            engine.load_engine(config.uci_engine_path);
-        }
-        else
-        {
-            engine.load_engine("");
-        }
-        
-        System.out.println("gui initialized");
-        
         
     }
     
@@ -2087,7 +1868,8 @@ public class Gui {
         select_notation_list.setMinHeight(260);
         select_notation_list.setMaxHeight(260);
 
-        ObservableList<String> select_notation_items =FXCollections.observableArrayList(
+        ObservableList<String> select_notation_items =FXCollections.observableArrayList
+        (
                 book.notation_list
         );
 
@@ -2095,7 +1877,8 @@ public class Gui {
 
         select_notation_list.setCellFactory(new Callback<ListView<String>, ListCell<String>>()
         {
-            @Override public ListCell<String> call(ListView<String> list) {
+            @Override public ListCell<String> call(ListView<String> list)
+            {
                 return new AnnotationFormatCell();
             }
         });
@@ -2157,8 +1940,6 @@ public class Gui {
 
         }
 
-        //book_file.from_hash(book);
-
         update_game();
         
     }
@@ -2166,53 +1947,8 @@ public class Gui {
     static int sel_book_move;
     private static EventHandler<MouseEvent> mouseHandlerBook = new EventHandler<MouseEvent>() {
  
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                
-                int x=(int)mouseEvent.getX();
-                int y=(int)mouseEvent.getY();
-                
-                String type=mouseEvent.getEventType().toString();
-
-                if(type.equals("MOUSE_CLICKED"))
-                {
-                    
-                    int j=book_list.getSelectionModel().getSelectedIndex();
-                    
-                    sel_book_move=j;
-                    
-                    int size=book.book_list.size();
-                    
-                    if((j>=0)&&(j<size))
-                    {
-                        
-                        String san=book.book_list.get(j).san;
-                        
-                        if(x<120)
-                        {
-                            
-                            make_san_move(san);
-                            
-                        }
-                        else
-                        {
-                            
-                            select_notation_for(san);
-                            
-                        }
-                        
-                    }
-                            
-                }
-
-            }
-        
-        };
-    
-        private static EventHandler<MouseEvent> engineTextHandler = new EventHandler<MouseEvent>() {
-
-        @Override
-        public void handle(MouseEvent mouseEvent) {
+        @Override public void handle(MouseEvent mouseEvent)
+        {
 
             int x=(int)mouseEvent.getX();
             int y=(int)mouseEvent.getY();
@@ -2221,20 +1957,63 @@ public class Gui {
 
             if(type.equals("MOUSE_CLICKED"))
             {
-                //System.out.println("Mouse clicked over pgn text at x="+x+" y="+y);
 
-                //System.out.println("caret position: "+pgn_text.getCaretPosition());
-                
+                int j=book_list.getSelectionModel().getSelectedIndex();
+
+                sel_book_move=j;
+
+                int size=book.book_list.size();
+
+                if((j>=0)&&(j<size))
+                {
+
+                    String san=book.book_list.get(j).san;
+
+                    if(x<120)
+                    {
+
+                        make_san_move(san);
+
+                    }
+                    else
+                    {
+
+                        select_notation_for(san);
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    };
+
+    private static EventHandler<MouseEvent> engineTextHandler = new EventHandler<MouseEvent>()
+    {
+
+        @Override public void handle(MouseEvent mouseEvent)
+        {
+
+            int x=(int)mouseEvent.getX();
+            int y=(int)mouseEvent.getY();
+
+            String type=mouseEvent.getEventType().toString();
+
+            if(type.equals("MOUSE_CLICKED"))
+            {
+
                 if(engine.engine_running)
                 {
                     return;
                 }
 
                 int click_index=engine_text_area.getCaretPosition();
-                
+
                 if(click_index<game.click_list.size())
                 {
-                    
+
                     GameNode clicked=game.click_list.get(click_index);
 
                     if(clicked!=null)
@@ -2249,11 +2028,9 @@ public class Gui {
                         check_engine_after_making_move();
 
                     }
-                    
+
                 }
-                
-                
-                
+
             }
 
         }
@@ -2267,6 +2044,250 @@ public class Gui {
             return false;
         }
         return (index<max);
+    }
+    
+    static VBox moves_vbox=new VBox();
+    static HBox moves_hbox=new HBox(hbox_padding);
+    public static void init(Stage set_gui_stage)
+    {
+        
+        HBox main_hbox=new HBox(hbox_padding);
+        
+        game.board.init_move_table();
+        
+        fen_text=new TextField();
+        
+        try
+        {
+            new File("boardstyles").mkdir();
+        }
+        catch(Exception e)
+        {
+            
+        }
+        
+        MyButton.button_pressed_handler=new EventHandler<ActionEvent>()
+        {
+            @Override public void handle(ActionEvent e)
+            {
+                handle_button_pressed(e);
+            }
+        };
+        
+        init_translit();
+
+        read_in_style("board_setup.ser");
+        read_in_config();
+        
+        set_target_board_size(config.target_board_size);
+        
+        gui_stage=set_gui_stage;
+        
+        gui_stage.setTitle("Chess GUI");
+        gui_stage.setScene(scene);
+        
+        board_pane_vertical_box.getChildren().add(board_canvas_group);
+        
+        Image imageSave = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/save.bmp"));
+        Image imageOpen = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/open.bmp"));
+        Image imageDel = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/del.bmp"));
+        Image imageBack = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/back.bmp"));
+        Image imageForward = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/forward.bmp"));
+        Image imageBegin = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/begin.bmp"));
+        Image imageEnd = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/end.bmp"));
+        Image imageOptions = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/options.bmp"));
+        Image imageFlip = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/flip.bmp"));
+        Image imageReset = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/reset.bmp"));
+        Image imageStart = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/start.bmp"));
+        Image imageStop = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/stop.bmp"));
+        Image imageMake = new Image(Javachessgui2.class.getResourceAsStream("resources/icons/make.bmp"));
+        
+        clip_to_fen_button=new MyButton("Clip->Fen");
+        fen_to_clip_button=new MyButton("Fen->Clip");
+        clip_to_pgn_button=new MyButton("Clip->PGN");
+        pgn_to_clip_button=new MyButton("PGN->Clip");
+        
+        go_button=new MyButton("",new ImageView(imageStart));
+        make_button=new MyButton("",new ImageView(imageMake));
+        stop_button=new MyButton("",new ImageView(imageStop));
+        
+        flip_button=new MyButton("",new ImageView(imageFlip));
+        flip_button.setStyle("-fx-background-color: transparent;");
+        
+        style_button=new MyButton("",new ImageView(imageOptions));
+        style_button.setStyle("-fx-background-color: transparent;");
+        
+        begin_button=new MyButton("",new ImageView(imageBegin));
+        begin_button.setStyle("-fx-background-color: transparent;");
+        
+        end_button=new MyButton("",new ImageView(imageEnd));
+        end_button.setStyle("-fx-background-color: transparent;");
+        
+        forward_button=new MyButton("",new ImageView(imageForward));
+        forward_button.setStyle("-fx-background-color: transparent;");
+        
+        back_button=new MyButton("",new ImageView(imageBack));
+        back_button.setStyle("-fx-background-color: transparent;");
+        
+        load_engine_button=new MyButton("Engine",new ImageView(imageOpen));
+        open_pgn_button=new MyButton("PGN",new ImageView(imageOpen));
+        save_pgn_as_button=new MyButton("PGN as",new ImageView(imageSave));
+        save_pgn_button=new MyButton("PGN",new ImageView(imageSave));
+        
+        del_button=new MyButton("",new ImageView(imageDel));
+        del_button.setStyle("-fx-background-color: transparent;");
+        
+        reset_button=new MyButton("",new ImageView(imageReset));
+        reset_button.setStyle("-fx-background-color: transparent;");
+        
+        Slider board_size_slider=new Slider();
+        
+        board_size_slider.setMin(300);
+        board_size_slider.setMax(600);
+        board_size_slider.setMaxWidth(50);
+        
+        board_size_slider.setValue(config.target_board_size);
+           
+        board_size_slider.valueProperty().addListener(new ChangeListener<Number>()
+        {
+            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val)
+            {
+                    resize_target_board_size(new_val.intValue());
+            }
+        });
+        
+        board_controls_box.getChildren().add(board_size_slider);
+        
+        board_controls_box.getChildren().add(begin_button);
+        board_controls_box.getChildren().add(back_button);
+        board_controls_box.getChildren().add(forward_button);
+        board_controls_box.getChildren().add(end_button);
+        board_controls_box.getChildren().add(del_button);
+        
+        board_controls_box.getChildren().add(flip_button);
+        board_controls_box.getChildren().add(style_button);
+        
+        board_controls_box.getChildren().add(reset_button);
+        
+        board_controls_box.getChildren().add(clip_to_fen_button);
+        board_controls_box.getChildren().add(fen_to_clip_button);
+        
+        board_controls_box.getChildren().add(load_engine_button);
+        
+        board_controls_box.getChildren().add(open_pgn_button);
+        board_controls_box.getChildren().add(go_button);
+        board_controls_box.getChildren().add(stop_button);
+        board_controls_box.getChildren().add(make_button);
+        board_controls_box.getChildren().add(save_pgn_button);
+        board_controls_box.getChildren().add(save_pgn_as_button);
+        board_controls_box.getChildren().add(clip_to_pgn_button);
+        board_controls_box.getChildren().add(pgn_to_clip_button);
+        
+        
+        board_pane_vertical_box.getChildren().add(board_controls_box);
+        
+        board_pane_vertical_box.getChildren().add(fen_text);
+        
+        main_hbox.getChildren().add(board_pane_vertical_box);
+        
+        moves_hbox.getChildren().add(legal_move_list);
+        moves_hbox.getChildren().add(game_list);
+        
+        book_list.setStyle("-fx-font-family: monospace;-fx-font-size: 18px;");
+        book_list.setOnMouseClicked(mouseHandlerBook);
+        book_list.setCellFactory(new Callback<ListView<String>, ListCell<String>>()
+        {
+            @Override public ListCell<String> call(ListView<String> list)
+            {
+                return new AnnotationFormatCell();
+            }
+        });
+        
+        moves_hbox.getChildren().add(book_list);
+        
+        moves_vbox.getChildren().add(moves_hbox);
+        
+        engine_text_area.setOnMouseClicked(engineTextHandler);
+        
+        moves_vbox.getChildren().add(engine_text_area);
+        
+        main_hbox.getChildren().add(moves_vbox);
+        
+        legal_move_list.setMaxWidth(80);
+        legal_move_list.setMinWidth(80);
+        game_list.setMaxWidth(120);
+        game_list.setMinWidth(120);
+        
+        game_list.setCellFactory(new Callback<ListView<String>, ListCell<String>>()
+        {
+            @Override public ListCell<String> call(ListView<String> list)
+            {
+                return new GameListFormatCell();
+            }
+        });
+        
+        legal_move_list.setOnMouseClicked(new EventHandler<Event>()
+        {
+
+            @Override public void handle(Event event)
+            {
+
+                int selected =  legal_move_list.getSelectionModel().getSelectedIndex();
+                
+                if(valid_index(selected,num_sans))
+                {
+                
+                    String san=sorted_sans[selected];
+
+                    make_san_move(san);
+
+                }
+                
+            }
+            
+        });
+        
+        game_list.setOnMouseClicked(new EventHandler<Event>()
+        {
+
+            @Override public void handle(Event event) {
+
+                int selected =  game_list.getSelectionModel().getSelectedIndex();
+                
+                if(valid_index(selected,game.calc_ptr))
+                {
+                    
+                    check_engine_before_making_move();
+                    
+                    game.calc_game_to_end();
+                
+                    game.jump_to(selected);
+                    
+                    check_engine_after_making_move();
+                    
+                }
+                
+            }
+            
+        });
+        
+        root.getChildren().add(main_hbox);
+        
+        update_game();
+        
+        resize_target_board_size(config.target_board_size);
+        
+        if(config.uci_engine_path!=null)
+        {
+            engine.load_engine(config.uci_engine_path);
+        }
+        else
+        {
+            engine.load_engine("");
+        }
+        
+        System.out.println("gui initialized");
+        
     }
     
 }

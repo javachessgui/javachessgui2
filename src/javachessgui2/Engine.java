@@ -146,6 +146,12 @@ public class Engine {
     public String fen="";
     public void go()
     {
+        
+        if(!is_engine_installed())
+        {
+            return;
+        }
+        
         if(engine_running)
         {
             
