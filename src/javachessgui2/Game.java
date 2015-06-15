@@ -675,6 +675,118 @@ public class Game {
 
     }
     
+    public void calc_pgn_tree_recursive(GameNode current,Boolean first)
+    {
+        ArrayList<GameNode> list=sort_node(current);
+        
+        if(list.size()<=0)
+        {
+            return;
+        }
+        
+        String san=list.get(0).gen_san;
+        if(board.turn==Board.TURN_WHITE)
+        {
+            pgn+=board.fullmove_number+". ";
+        }
+        else
+        {
+            if(first)
+            {
+                pgn+=board.fullmove_number+". .. ";
+            }
+        }
+        pgn+=san+" ";
+        
+        for(int i=1;i<list.size();i++)
+        {
+            
+            Board dummy=board.clone();
+            
+            String alt_san=list.get(i).gen_san;
+            
+            pgn+="(";
+            
+            if(board.turn==Board.TURN_WHITE)
+            {
+                pgn+=board.fullmove_number+". ";
+            }
+            else
+            {
+                pgn+=board.fullmove_number+". .. ";
+            }
+            
+            pgn+=alt_san+" ";
+            
+            make_san_move(alt_san);
+            calc_pgn_tree_recursive(list.get(i),false);
+            
+            pgn+=")";
+            
+            current_node=current;
+            board.copy(dummy);
+            
+        }
+        
+        make_san_move(san);
+        calc_pgn_tree_recursive(list.get(0),false);
+        
+    }
+    
+    public String calc_pgn_tree()
+    {
+        Board dummy=new Board();
+
+        initial_position=nodes.fen;
+        dummy.set_from_fen(initial_position);
+
+        int fullmove_number=dummy.fullmove_number;
+        int turn=dummy.turn;
+
+        pgn="[FEN \""+initial_position+"\"]\n";
+        //start_fen_end_index=pgn.length()-1;
+        if(set_flip)
+        {
+            pgn+="[Flip \""+flip+"\"]\n";
+        }
+
+        // add hash headers
+
+        Set<String> keys = pgn_header_hash.keySet();
+        for(String key: keys)
+        {
+            String value=pgn_header_hash.get(key).toString();
+            if((!key.equals("FEN"))&&(!key.equals("Flip")))
+            {
+                pgn+="["+key+" \""+value+"\"]\n";
+            }
+        }
+
+        pgn+="\n";
+        
+        //////////////////////////////////////////////////
+        
+        GameNode save=current_node;
+        dummy=board.clone();
+        
+        current_node=nodes;
+        board.set_from_fen(nodes.fen);
+                
+        //////////////////////////////////////////////////
+        
+        calc_pgn_tree_recursive(current_node,true);
+        
+        //////////////////////////////////////////////////
+        
+        current_node=save;
+        board.copy(dummy);
+        
+        pgn=pgn.replaceAll(" \\)", ") ");
+
+        return pgn;
+
+    }
+    
     public Game()
     {
         reset();

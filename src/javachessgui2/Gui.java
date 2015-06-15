@@ -657,7 +657,9 @@ public class Gui {
     
     static void pgn_to_clip()
     {
-        
+        ClipboardContent content = new ClipboardContent();
+        content.putString(game.calc_pgn_tree());
+        clip.setContent(content);
     }
     
     static void clip_to_fen()
@@ -731,7 +733,7 @@ public class Gui {
 
         game.pgn_lines=my_file.read_lines();
 
-        game.set_from_pgn_lines_simple();
+        game.set_from_pgn_lines_tree();
         
         last_open_pgn_path=path;
         
@@ -964,7 +966,7 @@ public class Gui {
 
             game.set_flip=true;
             game.flip=flip;
-            game.calc_pgn();
+            game.calc_pgn_tree();
 
             my_file.content=game.pgn;
 
@@ -1036,7 +1038,7 @@ public class Gui {
 
                         game.set_flip=true;
                         game.flip=flip;
-                        game.calc_pgn();
+                        game.calc_pgn_tree();
 
                         my_file.content=game.pgn;
                         
