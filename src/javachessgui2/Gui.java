@@ -1317,6 +1317,8 @@ public class Gui {
         int fullmove_number=dummy.fullmove_number;
         int turn=dummy.turn;
         
+        game.calc_game_to_end();
+        
         for(int i=0;i<game.calc_ptr;i++)
         {
             String san=game.game[i].gen_san;
@@ -2034,6 +2036,8 @@ public class Gui {
                 {
                     
                     check_engine_before_making_move();
+                    
+                    game.calc_game_to_end();
                 
                     game.jump_to(selected);
                     
