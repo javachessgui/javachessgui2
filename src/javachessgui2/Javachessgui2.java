@@ -12,6 +12,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.scene.control.ScrollPane;
 
+
 public class Javachessgui2 extends Application{
     
     
@@ -59,7 +60,9 @@ public class Javachessgui2 extends Application{
         scrollPane.setFitToWidth(true);
         
         scrollPane.setContent(browser);
+        
         what=what.replaceAll("\n", "<br>");
+        
         webEngine.loadContent(
                 "<body style=\"background-color: #efefff;font-size: 20px;font-family: monospace;\">"+
                 what+
