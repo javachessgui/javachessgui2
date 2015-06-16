@@ -379,7 +379,7 @@ public class MyFile
         }
         if(index>0)
         {
-            return name.substring(0, index-1);
+            return name.substring(0, index);
         }
         return name;
     }
