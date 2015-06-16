@@ -50,6 +50,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import javafx.geometry.Insets;
+import javafx.scene.control.ProgressBar;
 
 import javax.swing.JOptionPane;
 
@@ -59,10 +60,14 @@ class MyEngine extends Engine
     {
         Gui.engine_text_area.setText(what);
     }
-    
+
+    Boolean do_update=true;
     @Override public void update_engine()
     {
-        Gui.update_engine();
+        if(do_update)
+        {
+            Gui.update_engine();
+        }
     }
     
     @Override public String get_config_path()
@@ -365,7 +370,7 @@ public class Gui
     
     static int legal_move_list_width=60;
     static int game_move_list_width=100;
-    static int book_list_width=200;
+    static int book_list_width=400;
     
     static int move_lists_width=
                                 legal_move_list_width+
@@ -436,6 +441,7 @@ public class Gui
     static MyButton end_button;
     static MyButton load_engine_button;
     static MyButton go_button;
+    static MyButton deep_button;
     static MyButton make_button;
     static MyButton stop_button;
     static MyButton open_pgn_button;
@@ -1114,6 +1120,64 @@ public class Gui
         
     }
     
+    static void deep()
+    {
+        create_start_deep_group();
+
+        start_deep_modal=new MyModal(start_deep_group,"Deep Analysis");
+        start_deep_modal.setxy(15, board_size+bottom_bar_height-150);
+
+        deep_stop_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+
+                interrupt_deep=true;
+
+            }
+        });
+        
+        engine.stop();
+                    
+        game.board.list_legal_moves(null);
+        deep_legal_move_list_buffer=new String[500];
+
+        deep_legal_move_list_buffer_cnt=game.board.legal_sans_cnt;
+        deep_legal_move_list_buffer=Arrays.copyOfRange(game.board.legal_sans,0,deep_legal_move_list_buffer_cnt);
+        Arrays.sort(deep_legal_move_list_buffer);
+
+        System.out.println("no legal moves: "+deep_legal_move_list_buffer_cnt);
+
+        runnable_do_deep_thread=new Runnable(){
+                public void run()
+                {
+                    do_deep();
+                }
+        };
+        
+
+        do_deep_thread=new Thread(runnable_do_deep_thread);
+
+        runnable_update_deep_thread=new Runnable(){
+                public void run()
+                {
+                    update_deep();
+                }
+        };
+
+        update_deep_thread=new Thread(runnable_update_deep_thread);
+
+        interrupt_deep=false;
+
+        deep_going=true;
+
+        do_deep_thread.start();
+        update_deep_thread.start();
+
+        engine.do_update=false;
+        start_deep_modal.show_and_wait();
+        engine.do_update=true;
+
+    }
+    
     static void go()
     {
         engine.fen=game.board.report_fen();
@@ -1336,6 +1400,7 @@ public class Gui
         if(source==end_button){end();}
         if(source==load_engine_button){load_engine();}
         if(source==go_button){go();}
+        if(source==deep_button){deep();}
         if(source==make_button){make();}
         if(source==stop_button){stop();}
         if(source==open_pgn_button){open_pgn();}
@@ -2154,6 +2219,8 @@ public class Gui
         clip_to_pgn_button=new MyButton("Clip->PGN");
         pgn_to_clip_button=new MyButton("PGN->Clip");
         
+        deep_button=new MyButton("Deep");
+        
         go_button=new MyButton("",new ImageView(imageStart));
         make_button=new MyButton("",new ImageView(imageMake));
         stop_button=new MyButton("",new ImageView(imageStop));
@@ -2233,6 +2300,7 @@ public class Gui
         board_controls_box.getChildren().add(save_pgn_as_button);
         board_controls_box.getChildren().add(clip_to_pgn_button);
         board_controls_box.getChildren().add(pgn_to_clip_button);
+        board_controls_box.getChildren().add(deep_button);
         
         
         board_pane_vertical_box.getChildren().add(board_controls_box);
@@ -2342,5 +2410,190 @@ public class Gui
         System.out.println("gui initialized");
         
     }
+
+//////////////////////////////////////////////////////////////////
+
+    static Group start_deep_group;
+    static Button deep_stop_button;
+    static Label deep_text;
+    static MyModal start_deep_modal;
+    static ProgressBar progress;
+    static Boolean interrupt_deep;
+        
+    static int do_deep_i;
+
+    static String[] deep_legal_move_list_buffer;
+    static int deep_legal_move_list_buffer_cnt=0;
+
+    static Boolean deep_going;
+
+    static String deep_san;
     
+    static Runnable runnable_do_deep_thread;
+    static Runnable runnable_update_deep_thread;
+        
+    static Thread do_deep_thread;
+    static Thread update_deep_thread;
+
+    private static void create_start_deep_group()
+    {
+
+        int width=440;
+
+        start_deep_group=new Group();
+
+        deep_stop_button=new Button();
+        deep_stop_button.setText("Stop");
+        deep_stop_button.setTranslateX(10);
+        deep_stop_button.setTranslateY(10);
+
+        /*deep_text=new TextArea();
+        deep_text.setMaxHeight(120);*/
+
+        deep_text=new Label();
+        deep_text.setTranslateX(15);
+        deep_text.setTranslateY(10);
+
+        progress = new ProgressBar();
+        progress.setMinWidth(width-20);
+        progress.setTranslateX(10);
+
+        VBox deep_vbox=new VBox(20);
+
+        deep_vbox.setMinWidth(width);
+        deep_vbox.setMaxWidth(width);
+        deep_vbox.setMinHeight(160);
+        deep_vbox.setMaxHeight(160);
+
+        deep_vbox.getChildren().add(deep_stop_button);
+        deep_vbox.getChildren().add(deep_text);
+        deep_vbox.getChildren().add(progress);
+
+        start_deep_group.getChildren().add(deep_vbox);
+
+    }
+    
+    public static void update_deep()
+    {
+
+        try
+            {
+                Thread.sleep(500);
+            }
+            catch(InterruptedException ex)
+            {
+
+            }
+
+        while(deep_going)
+        {
+
+            Platform.runLater(new Runnable()
+            {
+
+                public void run()
+                {
+                    deep_text.setText("Examining: "+deep_san);
+                    double p=(double)do_deep_i/(double)deep_legal_move_list_buffer_cnt;
+
+                    progress.setProgress(p);
+                    
+                    update_game();
+                }
+
+            });
+
+            try
+            {
+                Thread.sleep(1000);
+            }
+            catch(InterruptedException ex)
+            {
+
+            }
+        }
+    }
+    
+    public static void do_deep()
+    {
+
+        do_deep_i=0;
+
+        String fen=game.board.report_fen();
+
+        for(int i=0;i<deep_legal_move_list_buffer_cnt;i++)
+        {
+
+            Platform.runLater(new Runnable()
+            {
+
+                public void run()
+                {
+
+                    deep_san=deep_legal_move_list_buffer[do_deep_i++];
+
+                    game.board.set_from_fen(fen);
+
+                    game.board.make_move(game.board.san_to_move(deep_san));
+
+                    //System.out.println("deep san "+deep_san+" fen "+b.report_fen());
+
+                    engine.fen=game.board.report_fen();
+                    engine.go();
+
+                    try
+                    {
+                        Thread.sleep(250);
+                    }
+                    catch(InterruptedException ex)
+                    {
+
+                    }
+
+                    engine.stop();
+
+                    game.board.set_from_fen(fen);
+
+                    //System.out.println("score "+b.score_numerical);
+
+                    book.record_eval(fen,deep_san,-engine.score_numerical);
+
+                }
+
+            });
+
+            try
+            {
+                Thread.sleep(300);
+            }
+            catch(InterruptedException ex)
+            {
+
+            }
+
+            if(interrupt_deep)
+            {
+
+                break;
+
+            }
+
+        }
+
+        deep_going=false;
+
+        Platform.runLater(new Runnable()
+        {
+
+            public void run()
+            {
+                start_deep_modal.close();
+            }
+
+        });
+
+    }
+
+//////////////////////////////////////////////////////////////////
+        
 }
