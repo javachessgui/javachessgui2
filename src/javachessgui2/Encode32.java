@@ -1,7 +1,7 @@
 package javachessgui2;
 
-public class Encode32 {
-    
+public class Encode32
+{
        
     public static String encode(String s,Boolean encode)
     {
@@ -52,7 +52,6 @@ public class Encode32 {
         }
         
         String out="";
-               
         
         while(binary.length()>0)
         {
@@ -85,6 +84,5 @@ public class Encode32 {
     {
         
     }
-            
     
 }

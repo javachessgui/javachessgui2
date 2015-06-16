@@ -1,6 +1,7 @@
 package javachessgui2;
 
-public class Move extends RawMove {
+public class Move extends RawMove
+{
     
     public Square ep_square=new Square();
     
@@ -10,7 +11,8 @@ public class Move extends RawMove {
     {
         if(valid)
         {
-            System.out.println("[ Move "+super.print_as_string()+
+            System.out.println(
+                    "[ Move "+super.print_as_string()+
                     " : ep square = "+ep_square.to_algeb()+
                     " , prom piece = ("+prom_piece.fen_char+") ]"
             );

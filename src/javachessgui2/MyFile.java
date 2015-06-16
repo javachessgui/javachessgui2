@@ -17,8 +17,8 @@ import java.nio.file.InvalidPathException;
 import java.util.Hashtable;
 import java.util.Set;
 
-public class MyFile {
-    
+public class MyFile
+{
     
     final static int MAX_LINES=10000;
     
@@ -230,11 +230,15 @@ public class MyFile {
         if(f.exists())
         {
             FileReader fr=null;
-            try {
+            
+            try
+            {
                fr=new FileReader(path);
-               } catch(IOException ex) {
+            }
+            catch(IOException ex)
+            {
                
-               }
+            }
             
             BufferedReader br=new BufferedReader(fr);
             
@@ -242,24 +246,31 @@ public class MyFile {
             
             do
             {
-            try {
-               CurrentLine = br.readLine();
-               } catch(IOException ex) {
-               
-               }
-            
-            if(CurrentLine!=null)
-            {
-                if(cnt<MAX_LINES)
+                
+                try
                 {
-                    lines[cnt++]=CurrentLine;
-                    content+=CurrentLine+"\n";
+                   CurrentLine = br.readLine();
                 }
-            }
+                catch(IOException ex)
+                {
+
+                }
+
+                if(CurrentLine!=null)
+                {
+                    if(cnt<MAX_LINES)
+                    {
+                        lines[cnt++]=CurrentLine;
+                        content+=CurrentLine+"\n";
+                    }
+                }
             
             }while(CurrentLine!=null);
             
-            if(cnt==0){return null;}
+            if(cnt==0)
+            {
+                return null;
+            }
             
             num_lines=cnt;
             

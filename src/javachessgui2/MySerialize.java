@@ -8,7 +8,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import static javachessgui2.Gui.current_style;
 
-public class MySerialize {
+public class MySerialize
+{
     
     public static Boolean write(String path,Object what)
     {
@@ -116,4 +117,5 @@ public class MySerialize {
     {
         
     }
+    
 }

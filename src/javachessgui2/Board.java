@@ -1100,8 +1100,6 @@ public class Board {
                     int piece_type=p&Piece.TYPE;
                     int piece_color=p&Piece.COLOR;
                     
-                    //System.out.println("i "+i+" j "+j+" p "+p+" curr "+move_table_curr_ptr);
-                    
                     if((piece_type==Piece.QUEEN)||(piece_type==Piece.ROOK)||(piece_type==Piece.BISHOP)||(piece_type==Piece.KNIGHT)||(piece_type==Piece.KING)||(piece_type==Piece.PAWN))
                     {
                         
@@ -1116,7 +1114,7 @@ public class Board {
                                 
                                 Boolean is_castling=(
                                             (
-                                            // castling white
+                                                // castling white
                                                 (p==(Piece.WHITE|Piece.KING))
                                                 &&
                                                 (
@@ -1293,9 +1291,10 @@ public class Board {
                         
                     }
                     
-                    
                 }
+                
             }
+            
         }
         
         System.out.println("move table initialized, number of entries: "+move_table_curr_ptr);

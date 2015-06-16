@@ -1,6 +1,7 @@
 package javachessgui2;
 
-public class Piece {
+public class Piece
+{
     
     public final static int SLIDING=32;
     public final static int STRAIGHT=16;

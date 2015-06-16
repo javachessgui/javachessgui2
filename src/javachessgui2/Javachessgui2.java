@@ -7,29 +7,19 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.scene.control.ScrollPane;
 
-
-public class Javachessgui2 extends Application{
-    
-    
+public class Javachessgui2 extends Application
+{
     
     final static WebView browser = new WebView();
     final static WebEngine webEngine = browser.getEngine();
     static ScrollPane scrollPane = new ScrollPane();
     
     public static TextArea message_text=new TextArea();
-    
-    /*final static String message_text_style=
-            "-fx-font-size: 18px;"+
-            "-fx-border-width: 10px;"
-            + "-fx-border-radius: 10px;"
-            + "-fx-border-style: solid;"
-            + "-fx-control-inner-background: #efefff;"
-            + "-fx-border-color: #afafff;";*/
     
     final static String scroll_pane_style=
             "-fx-border-width: 10px;"
@@ -42,15 +32,6 @@ public class Javachessgui2 extends Application{
     {
         
         timer=set_timer;
-        
-        /*message_text.setText(what);
-        message_text.setStyle("-fx-opacity: 1;"+message_text_style);
-        message_text.toFront();
-        
-        message_text.setMinHeight(Gui.board_size);
-        message_text.setMaxHeight(Gui.board_size);
-        message_text.setMinWidth(Gui.board_size);
-        message_text.setMaxWidth(Gui.board_size);*/
         
         scrollPane.setMinHeight(Gui.board_size);
         scrollPane.setMaxHeight(Gui.board_size);
@@ -92,9 +73,6 @@ public class Javachessgui2 extends Application{
 
                     public void run()
                     {
-
-                        /*message_text.setStyle("-fx-opacity: 0;"+message_text_style);
-                        message_text.toBack();*/
                         
                         scrollPane.setStyle("-fx-opacity: 0;"+scroll_pane_style);
                         scrollPane.toBack();
@@ -120,12 +98,6 @@ public class Javachessgui2 extends Application{
         primaryStage.setY(0);
                 
         Gui.init(primaryStage);
-        
-        /*message_text.setWrapText(true);
-        
-        message_text.setStyle("-fx-opacity: 0;"+message_text_style);
-        
-        Gui.root.getChildren().add(message_text);*/
         
         Gui.root.getChildren().add(scrollPane);
         

@@ -7,7 +7,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Group;
 
-public class MyModal {
+public class MyModal
+{
     
     private Stage modal_stage;
     

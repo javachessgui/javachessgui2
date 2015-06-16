@@ -1,6 +1,7 @@
 package javachessgui2;
 
-public class MyTokenizer {
+public class MyTokenizer
+{
     
     String content;
     
@@ -56,4 +57,5 @@ public class MyTokenizer {
     {
         content=what;
     }
+    
 }

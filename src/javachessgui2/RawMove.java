@@ -1,6 +1,7 @@
 package javachessgui2;
 
-public class RawMove {
+public class RawMove
+{
     
     Boolean valid=false;
     
@@ -41,6 +42,7 @@ public class RawMove {
     
     public Boolean from_algeb(String algeb)
     {
+        
         if(algeb.length()!=4)
         {
             return (valid=false);

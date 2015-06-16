@@ -1,6 +1,7 @@
 package javachessgui2;
 
-public class Square {
+public class Square
+{
     
     public Boolean valid=false;
     
@@ -22,6 +23,7 @@ public class Square {
     
     public String to_algeb()
     {
+        
         if(!valid)
         {
             return null;
@@ -56,6 +58,7 @@ public class Square {
     
     public Boolean from_algeb(String algeb)
     {
+        
         if(algeb.length()<2)
         {
             return (valid=false);

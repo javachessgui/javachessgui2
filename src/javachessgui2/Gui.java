@@ -41,7 +41,6 @@ import javafx.scene.text.Font;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-
 import javafx.stage.*;
 
 import javafx.beans.value.ChangeListener;
@@ -330,7 +329,8 @@ class BoardStyle implements java.io.Serializable
     
 }
 
-class MyButton extends Button {
+class MyButton extends Button
+{
     
     public String text;
     
@@ -356,9 +356,8 @@ class MyButton extends Button {
     
 }
 
-public class Gui {
-    
-    
+public class Gui
+{
     
     public static Book book=new Book("book");
     
