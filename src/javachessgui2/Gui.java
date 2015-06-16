@@ -423,6 +423,7 @@ public class Gui
     /////////////////////////////////////////////
     
     static Canvas board_canvas;
+    static Canvas highlight_canvas;
     static Canvas engine_canvas;
     static Canvas drag_canvas;
     
@@ -461,6 +462,7 @@ public class Gui
     static InputStream font_stream;
     
     static GraphicsContext board_canvas_gc;
+    static GraphicsContext highlight_canvas_gc;
     static GraphicsContext engine_canvas_gc;
     static GraphicsContext drag_canvas_gc;
     
@@ -1073,6 +1075,7 @@ public class Gui
             engine.stop();
             restart_engine=true;
         }
+        
     }
     
     static void check_engine_after_making_move()
@@ -1507,8 +1510,28 @@ public class Gui
         }
         
         draw_board();
-     
+        
+        highlight_last_move();
+        
     }
+    
+    static void highlight_last_move()
+    {
+        highlight_canvas_gc.clearRect(0,0,board_size,board_size);
+        if(game.current_node.parent_node!=null)
+        {
+            Board dummy=new Board();
+            dummy.set_from_fen(game.current_node.parent_node.fen);
+            Move m=dummy.san_to_move(game.current_node.gen_san);
+            
+            int arc=piece_size/2;
+            int size=piece_size-4;
+            
+            highlight_canvas_gc.fillRoundRect(index_to_piece_px(m.from.i)+2,index_to_piece_px(m.from.j)+2,size,size,arc,arc);
+            highlight_canvas_gc.fillRoundRect(index_to_piece_px(m.to.i)+2,index_to_piece_px(m.to.j)+2,size,size,arc,arc);
+        }
+    }
+            
     
     public static void make_move(Move m)
     {   
@@ -1765,18 +1788,24 @@ public class Gui
         board_size=2*board_margin+8*board_square_size;
         
         board_canvas=new Canvas(board_size,board_size);
+        highlight_canvas=new Canvas(board_size,board_size);
         engine_canvas=new Canvas(board_size,board_size);
         drag_canvas=new Canvas(board_size,board_size);
         
         board_canvas_group=new Group();
         
         board_canvas_group.getChildren().add(board_canvas);
+        board_canvas_group.getChildren().add(highlight_canvas);
         board_canvas_group.getChildren().add(engine_canvas);
         board_canvas_group.getChildren().add(drag_canvas);
         
         board_canvas_gc=board_canvas.getGraphicsContext2D();
+        highlight_canvas_gc=highlight_canvas.getGraphicsContext2D();
         engine_canvas_gc=engine_canvas.getGraphicsContext2D();
         drag_canvas_gc=drag_canvas.getGraphicsContext2D();
+        
+        highlight_canvas.setOpacity(0.3);
+        highlight_canvas_gc.setFill(Color.rgb(255,255,0));
         
         font_stream = Javachessgui2.class.getResourceAsStream("resources/fonts/"+current_style.font);
         
