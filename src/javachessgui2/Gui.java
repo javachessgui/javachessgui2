@@ -53,6 +53,29 @@ import javafx.geometry.Insets;
 
 import javax.swing.JOptionPane;
 
+class MyEngine extends Engine
+{
+    @Override public void receive_intro(String what)
+    {
+        Gui.engine_text_area.setText(what);
+    }
+    
+    @Override public void update_engine()
+    {
+        Gui.update_engine();
+    }
+    
+    @Override public String get_config_path()
+    {
+        return Gui.config.uci_engine_path;
+    }
+    
+    @Override public void set_config_path(String set_path)
+    {
+        Gui.config.uci_engine_path=set_path;
+    }
+}
+
 class AnnotationFormatCell extends ListCell<String>
 {
     
@@ -360,7 +383,7 @@ public class Gui {
     
     static Stage file_chooser_stage=new Stage();
     
-    static Engine engine=new Engine();
+    static MyEngine engine=new MyEngine();
     
     static int margin_percent=10;
     

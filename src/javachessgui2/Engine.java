@@ -46,6 +46,26 @@ public class Engine {
     String score_verbal="";
     int score_numerical=0;
     
+    public void receive_intro(String what)
+    {
+        System.out.println("engine intro: "+what);
+    }
+    
+    public void update_engine()
+    {
+        System.out.println("depth: "+depth+" score: "+score_numerical+" pv: "+pv);
+    }
+    
+    public String get_config_path()
+    {
+        return null;
+    }
+    
+    public void set_config_path(String set_path)
+    {
+        
+    }
+    
     public void consume_engine_out(String uci)
     {
         
@@ -62,7 +82,8 @@ public class Engine {
                 public void run()
                 {
                     
-                    Gui.engine_text_area.setText(uci_puff);
+                    //Gui.engine_text_area.setText(uci_puff);
+                    receive_intro(uci_puff);
                     
                 }
                
@@ -124,7 +145,8 @@ public class Engine {
                    ;
         }
         
-        Gui.update_engine();
+        //Gui.update_engine();
+        update_engine();
         
     }
     
@@ -253,7 +275,8 @@ public class Engine {
         {
             uci_engine_path="";
         
-            String config_path=Gui.config.uci_engine_path;
+            //String config_path=Gui.config.uci_engine_path;
+            String config_path=get_config_path();
         
             if(config_path!=null)
             {
@@ -329,7 +352,8 @@ public class Engine {
 
             engine_read_thread.start();
             
-            Gui.config.uci_engine_path=uci_engine_path;
+            //Gui.config.uci_engine_path=uci_engine_path;
+            set_config_path(uci_engine_path);
             
             System.out.println("engine loaded "+uci_engine_path);
             
