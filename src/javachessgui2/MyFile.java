@@ -369,6 +369,36 @@ public class MyFile
         return "";
     }
     
+    public String get_name_only()
+    {
+        String name=get_name();
+        int index=name.indexOf(".");
+        if(index==0)
+        {
+            return "";
+        }
+        if(index>0)
+        {
+            return name.substring(0, index-1);
+        }
+        return name;
+    }
+    
+    public String get_extension_only()
+    {
+        String name=get_name();
+        int index=name.indexOf(".");
+        if(index>=0)
+        {
+            if(name.length()>(index+1))
+            {
+                return name.substring(index+1);
+            }
+            return "";
+        }
+        return "";
+    }
+    
     public MyFile(String set_path)
     {
         path=set_path;

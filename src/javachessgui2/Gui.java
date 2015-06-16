@@ -1239,7 +1239,9 @@ public class Gui
                 "<b>Saved to file: <br><font color=\"green\">"+
                 my_file.get_path()+
                 "</font><br><font color=\"red\" size=\"7\">"+
-                my_file.get_name()+
+                my_file.get_name_only()+
+                "</font><font color=\"green\" size=\"4\">."+
+                my_file.get_extension_only()+
                 "</font>\n\nContent</b>:\n\n"+my_file.content,
                 3000
         );

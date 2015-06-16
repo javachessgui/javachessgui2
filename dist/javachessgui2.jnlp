@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="javachessgui2.jar" size="180105" download="eager" />
+    <jar href="javachessgui2.jar" size="180343" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="javachessgui2" >
     <param name="requiredFXVersion" value="8.0+"/>
