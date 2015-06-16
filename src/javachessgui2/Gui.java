@@ -41,6 +41,7 @@ import javafx.scene.text.Font;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+
 import javafx.stage.*;
 
 import javafx.beans.value.ChangeListener;
@@ -356,6 +357,8 @@ class MyButton extends Button {
 }
 
 public class Gui {
+    
+    
     
     public static Book book=new Book("book");
     
@@ -1145,12 +1148,31 @@ public class Gui {
     
     static void clip_info(String content,Boolean to)
     {
+        
         Javachessgui2.system_message(
-                "Content copied "+
+                "<b>Content copied "+
                 (to?"to":"from")+
-                " clipboard:\n\n"+
+                " clipboard</b>:\n\n"+
                 content,
                 4000
+        );
+        
+    }
+    
+    static void save_pgn_to_file(MyFile my_file)
+    {
+        game.set_flip=true;
+        game.flip=flip;
+        game.calc_pgn_tree();
+
+        my_file.content=game.pgn;
+
+        my_file.write_content();
+
+        Javachessgui2.system_message(
+                "<b>Saved to file: <font color=\"red\" size=\"8\">"+my_file.path+
+                "</font>\n\nContent</b>:\n\n"+my_file.content,
+                3000
         );
     }
     
@@ -1164,19 +1186,7 @@ public class Gui {
         {
             MyFile my_file=new MyFile(last_open_pgn_path);
 
-            game.set_flip=true;
-            game.flip=flip;
-            game.calc_pgn_tree();
-
-            my_file.content=game.pgn;
-
-            my_file.write_content();
-
-            Javachessgui2.system_message(
-                    "Saved to file: "+last_open_pgn_path+
-                    "\n\nContent:\n\n"+my_file.content,
-                    3000
-            );
+            save_pgn_to_file(my_file);
         }
     }
     
@@ -1249,21 +1259,7 @@ public class Gui {
 
                     MyFile my_file=new MyFile(path);
 
-                    game.set_flip=true;
-                    game.flip=flip;
-                    game.calc_pgn_tree();
-
-                    my_file.content=game.pgn;
-
-                    my_file.write_content();
-                    
-                    last_open_pgn_path=path;
-
-                    Javachessgui2.system_message(
-                            "Saved to file: "+path+
-                            "\n\nContent:\n\n"+my_file.content,
-                            3000
-                    );
+                    save_pgn_to_file(my_file);
 
                 }
 
