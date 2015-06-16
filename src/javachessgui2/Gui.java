@@ -1233,7 +1233,10 @@ public class Gui
         my_file.write_content();
 
         Javachessgui2.system_message(
-                "<b>Saved to file: <font color=\"red\" size=\"8\">"+my_file.path+
+                "<b>Saved to file: <br><font color=\"green\">"+
+                my_file.get_path()+
+                "</font><br><font color=\"red\" size=\"7\">"+
+                my_file.get_name()+
                 "</font>\n\nContent</b>:\n\n"+my_file.content,
                 3000
         );

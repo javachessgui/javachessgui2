@@ -329,7 +329,45 @@ public class MyFile
         }
         return null;
     }
+
+    public String get_path()
+    {
+        if(path==null)
+        {
+            return null;
+        }
+        
+        int index=path.lastIndexOf(File.separator);
+        
+        if(index>=0)
+        {
+            return path.substring(0,index);
+        }
+        return "";
+    }
     
+    public String get_name()
+    {
+        if(path==null)
+        {
+            return null;
+        }
+        
+        int index=path.lastIndexOf(File.separator);
+        
+        if(index>=0)
+        {
+            if(path.length()>(index+1))
+            {
+                return path.substring(index+1);
+            }
+            else
+            {
+                return "";
+            }
+        }
+        return "";
+    }
     
     public MyFile(String set_path)
     {
