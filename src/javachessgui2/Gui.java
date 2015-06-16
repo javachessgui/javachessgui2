@@ -399,6 +399,7 @@ public class Gui {
     static MyButton flip_button;
     static MyButton style_button;
     static MyButton reset_button;
+    static MyButton resetf_button;
     static MyButton clip_to_fen_button;
     static MyButton fen_to_clip_button;
     static MyButton clip_to_pgn_button;
@@ -783,6 +784,16 @@ public class Gui {
         check_engine_after_making_move();
     }
     
+    static void resetf()
+    {
+        stop_engine();
+      
+        game.reset();
+        flip();
+        
+        check_engine_after_making_move();
+    }
+    
     static void clip_to_pgn()
     {
         stop_engine();
@@ -850,6 +861,11 @@ public class Gui {
         }
     }
     
+    static void save_config()
+    {
+        MySerialize.write("config.ser", config);
+    }
+    
     static String last_open_pgn_path="";
     static void open_pgn()
     {
@@ -868,12 +884,12 @@ public class Gui {
         if(file==null){return;}
 
         String path=file.getPath();
+        String dir=file.getParent();
 
         save_pgn_as_text.setText(path);
 
-        config.initial_dir=path.substring(0,path.lastIndexOf(File.separator));
-
-        MySerialize.write("config.ser", config);
+        config.initial_dir=dir;
+        save_config();
 
         MyFile my_file=new MyFile(path);
 
@@ -1183,6 +1199,14 @@ public class Gui {
         save_pgn_as_text.setTranslateY(10);
         save_pgn_as_text.setStyle("-fx-font-size: 24px;-fx-font-family: monospace;-fx-font-weight: bold;");
         
+        if(save_pgn_as_text.getText().equals(""))
+        {
+            if(config.initial_dir!=null)
+            {
+                save_pgn_as_text.setText(config.initial_dir+File.separator+"default.pgn");
+            }
+        }
+        
         Button save_pgn_as_ok_button=new Button("Ok");
         save_pgn_as_ok_button.setMinHeight(30);
         save_pgn_as_ok_button.setMinWidth(100);
@@ -1209,6 +1233,8 @@ public class Gui {
                     my_file.content=game.pgn;
 
                     my_file.write_content();
+                    
+                    last_open_pgn_path=path;
 
                     Javachessgui2.system_message(
                             "Saved to file: "+path+
@@ -1269,7 +1295,7 @@ public class Gui {
     {
         engine.load_engine(null);
         
-        MySerialize.write("config.ser", config);
+        save_config();
     }
     
     public static void handle_button_pressed(ActionEvent e)
@@ -1280,6 +1306,7 @@ public class Gui {
         if(source==flip_button){flip();}
         if(source==style_button){style();}
         if(source==reset_button){reset();}
+        if(source==resetf_button){resetf();}
         if(source==clip_to_fen_button){clip_to_fen();}
         if(source==fen_to_clip_button){fen_to_clip();}
         if(source==clip_to_pgn_button){clip_to_pgn();}
@@ -1630,7 +1657,7 @@ public class Gui {
         
         config.target_board_size=set_target_board_size;
         
-        MySerialize.write("config.ser", config);
+        save_config();
         
         piece_size=1;
         
@@ -2142,6 +2169,9 @@ public class Gui {
         reset_button=new MyButton("",new ImageView(imageReset));
         reset_button.setStyle("-fx-background-color: transparent;");
         
+        resetf_button=new MyButton("",new ImageView(imageReset));
+        resetf_button.setStyle("-fx-background-color: transparent;");
+        
         Slider board_size_slider=new Slider();
         
         board_size_slider.setMin(300);
@@ -2170,6 +2200,7 @@ public class Gui {
         board_controls_box.getChildren().add(style_button);
         
         board_controls_box.getChildren().add(reset_button);
+        board_controls_box.getChildren().add(resetf_button);
         
         board_controls_box.getChildren().add(clip_to_fen_button);
         board_controls_box.getChildren().add(fen_to_clip_button);
