@@ -4,7 +4,7 @@ cd netbeansprojects
 cd javachessgui2
 del config.ser
 del engine_list.txt
-del /AH *.db
+del /AH src\javachessgui2\resources\icons\*.db
 del dist\*.ser
 del dist\*.txt
 del /AH dist\*.db
