@@ -1,1 +1,0 @@
-ren *.FFT *.TTF
