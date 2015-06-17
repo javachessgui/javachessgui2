@@ -815,6 +815,7 @@ public class Gui
         game.reset();
         
         gui_stage.setTitle("Chess GUI");
+        last_open_pgn_path="";
         
         check_engine_after_making_move();
     }
@@ -1350,7 +1351,7 @@ public class Gui
     static void save_pgn_as()
     {
         save_pgn_as_modal=new MyModal(create_save_pgn_as_group(),"Save PGN as");
-        save_pgn_as_modal.setxywh(50, 50, 500, 160);
+        save_pgn_as_modal.setxywh(50, 50, 850, 160);
         
         highlight_name_in_path();
         save_pgn_as_modal.show_and_wait();
@@ -1361,7 +1362,7 @@ public class Gui
         
         Group save_pgn_as_group=new Group();
         
-        save_pgn_as_text.setMinWidth(400);
+        save_pgn_as_text.setMinWidth(800);
         save_pgn_as_text.setTranslateX(10);
         save_pgn_as_text.setTranslateY(10);
         save_pgn_as_text.setStyle("-fx-font-size: 24px;-fx-font-family: monospace;-fx-font-weight: bold;");
