@@ -971,6 +971,7 @@ public class Board {
         
         if(orig_piece.fen_char=='k')
         {
+            
             castling_rights=castling_rights&~CASTLE_k;
             castling_rights=castling_rights&~CASTLE_q;
             
@@ -978,6 +979,7 @@ public class Board {
         
         if(orig_piece.fen_char=='K')
         {
+            
             castling_rights=castling_rights&~CASTLE_K;
             castling_rights=castling_rights&~CASTLE_Q;
             
@@ -1432,6 +1434,7 @@ public class Board {
             return false;
         }
         
+        castling_rights=0;
         for(int c=0;c<castling_rights_string.length();c++)
         {
             switch(castling_rights_string.charAt(c))
@@ -1562,6 +1565,20 @@ public class Board {
         halfmove_clock=what.halfmove_clock;
     
         fullmove_number=what.fullmove_number;
+    }
+    
+    public String report_status()
+    {
+        list_legal_moves(null);
+        if(legal_sans_cnt<=0)
+        {
+            if(is_in_check(turn))
+            {
+                return "mate";
+            }
+            return "stalemate";
+        }
+        return "";
     }
     
     public Board clone()

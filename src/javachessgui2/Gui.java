@@ -814,6 +814,8 @@ public class Gui
         
         game.reset();
         
+        gui_stage.setTitle("Chess GUI");
+        
         check_engine_after_making_move();
     }
     
@@ -836,6 +838,8 @@ public class Gui
         game.set_from_pgn_tree(pgn);
         
         clip_info(pgn,false);
+        
+        set_pgn_title();
         
         check_engine_after_making_move();
     }
@@ -899,6 +903,32 @@ public class Gui
         MySerialize.write("config.ser", config);
     }
     
+    static void set_pgn_title()
+    {
+        Object white_obj=game.pgn_header_hash.get("White");
+        String white="";
+        if(white_obj!=null)
+        {
+            white=white_obj.toString();
+        }
+        
+        Object black_obj=game.pgn_header_hash.get("Black");
+        String black="";
+        if(black_obj!=null)
+        {
+            black=black_obj.toString();
+        }
+        
+        Object result_obj=game.pgn_header_hash.get("Result");
+        String result="";
+        if(result_obj!=null)
+        {
+            result=result_obj.toString();
+        }
+        
+        gui_stage.setTitle("Game "+white+" - "+black+" "+result);
+    }
+    
     static String last_open_pgn_path="";
     static void open_pgn()
     {
@@ -911,12 +941,29 @@ public class Gui
 
             file_chooser.setInitialDirectory(dir);
         }
+        
+        File file;
+        String path;
+        Boolean is_multiple;
 
-        File file = file_chooser.showOpenDialog(file_chooser_stage);
+        do
+        {
+            
+            file = file_chooser.showOpenDialog(file_chooser_stage);
 
-        if(file==null){return;}
+            if(file==null){return;}
+            
+            path=file.getPath();
+            
+            is_multiple=game.is_multiple(path);
+            
+            if(is_multiple)
+            {
+                file_chooser.setInitialDirectory(new File(game.split_dir));
+            }
+        
+        }while(is_multiple);
 
-        String path=file.getPath();
         String dir=file.getParent();
 
         save_pgn_as_text.setText(path);
@@ -929,6 +976,8 @@ public class Gui
         game.pgn_lines=my_file.read_lines();
 
         game.set_from_pgn_lines_tree();
+        
+        set_pgn_title();
         
         last_open_pgn_path=path;
         
@@ -1130,12 +1179,16 @@ public class Gui
         start_deep_modal=new MyModal(start_deep_group,"Deep Analysis");
         start_deep_modal.setxy(15, board_size+bottom_bar_height-150);
 
-        deep_stop_button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
+        deep_stop_button.setOnAction(new EventHandler<ActionEvent>()
+        {
+            
+            @Override public void handle(ActionEvent e)
+            {
 
                 interrupt_deep=true;
 
             }
+            
         });
         
         engine.stop();
@@ -1149,7 +1202,8 @@ public class Gui
 
         System.out.println("no legal moves: "+deep_legal_move_list_buffer_cnt);
 
-        runnable_do_deep_thread=new Runnable(){
+        runnable_do_deep_thread=new Runnable()
+        {
                 public void run()
                 {
                     do_deep();
@@ -1159,7 +1213,8 @@ public class Gui
 
         do_deep_thread=new Thread(runnable_do_deep_thread);
 
-        runnable_update_deep_thread=new Runnable(){
+        runnable_update_deep_thread=new Runnable()
+        {
                 public void run()
                 {
                     update_deep();
@@ -1183,6 +1238,14 @@ public class Gui
     
     static void go()
     {
+        
+        String status=game.board.report_status();
+        if(status!="")
+        {
+            engine_text_area.setText("GUI message: position is "+status);
+            return;
+        }
+        
         engine.fen=game.board.report_fen();
         
         engine.go();
@@ -2480,9 +2543,6 @@ public class Gui
         deep_stop_button.setText("Stop");
         deep_stop_button.setTranslateX(10);
         deep_stop_button.setTranslateY(10);
-
-        /*deep_text=new TextArea();
-        deep_text.setMaxHeight(120);*/
 
         deep_text=new Label();
         deep_text.setTranslateX(15);

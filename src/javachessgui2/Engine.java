@@ -188,7 +188,9 @@ public class Engine
             {
                 set_fen_command="position fen "+fen+"\n";
             }
-            issue_command(set_fen_command+"go infinite\n");
+            String command=set_fen_command+"go infinite\n";
+            System.out.println(command);
+            issue_command(command);
             engine_running=true;
             
         }
@@ -321,6 +323,8 @@ public class Engine
                         {
 
                              char chunk=(char)engine_in.read();
+                             
+                             System.out.print(chunk);
 
                              if(chunk=='\n')
                              {

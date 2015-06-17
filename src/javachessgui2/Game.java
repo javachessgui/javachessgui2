@@ -1,5 +1,6 @@
 package javachessgui2;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -61,7 +62,7 @@ public class Game
     
     private String initial_position;
     
-    private Hashtable pgn_header_hash=new Hashtable();
+    public Hashtable pgn_header_hash=new Hashtable();
     
     public GameNode nodes;
     
@@ -71,9 +72,169 @@ public class Game
     
     public int calc_ptr=0;
     
+    public String split_dir;
+    
     public GameNode current_node;
     
     public Board board=new Board();
+    
+    final int ST_LEAD=0;
+    final int ST_HEAD=1;
+    final int ST_SEP=2;
+    final int ST_BODY=3;
+    
+    Pattern get_header = Pattern.compile("\\[([^ ]+) \"([^\\\"]+)\\\"");
+                        
+    String add_info(String line)
+    {
+        String info="";
+        
+        Matcher header_matcher = get_header.matcher(line);
+        
+        if(header_matcher.find())
+        {
+            String key=header_matcher.group(1);
+            String value=header_matcher.group(2);
+            if(key.equals("White")||key.equals("Black"))
+            {
+                value=value.replaceAll("[^0-9a-zA-Z]*","");
+                info+=value;
+            }
+        }
+
+        return info;
+    }
+    
+    public Boolean is_multiple(String path)
+    {
+        
+        MyFile pgn_file=new MyFile(path);
+        
+        String name=pgn_file.get_name_only();
+        
+        String current_pgn="";
+        
+        pgn_file.read_lines();
+        
+        int state=ST_LEAD;
+        
+        int cnt=0;
+        
+        pgn_file.lines[pgn_file.num_lines++]="";
+        
+        String info="";
+        
+        for(int i=0;i<pgn_file.num_lines;i++)
+        {
+            
+            String line=pgn_file.lines[i];
+            
+            line.replaceAll("\r","");
+            
+            MyTokenizer line_tokens=new MyTokenizer(line);
+            
+            String token=line_tokens.get_token();
+            
+            Boolean empty=(token==null);
+            
+            if(state==ST_LEAD)
+            {
+                if(!empty)
+                {
+                    
+                    current_pgn+=line+"\n";
+                    
+                    if(token.charAt(0)!='[')
+                    {
+                        state=ST_BODY;
+                    }
+                    else
+                    {
+                        state=ST_HEAD;
+                        info+=add_info(line);
+                    }
+                    
+                }
+            }
+            else if(state==ST_HEAD)
+            {
+                if(empty)
+                {
+                    current_pgn+="\n";
+                    state=ST_SEP;
+                }
+                else
+                {
+                    current_pgn+=line+"\n";
+                    
+                    if(token.charAt(0)!='[')
+                    {
+                        state=ST_BODY;
+                    }
+                    else
+                    {
+                        info+=add_info(line);
+                    }
+                }
+            }
+            else if(state==ST_SEP)
+            {
+                if(!empty)
+                {
+                    state=ST_BODY;
+                    current_pgn+=line+"\n";
+                }
+            }
+            else if(state==ST_BODY)
+            {
+                if(empty)
+                {
+                    split_dir="pgn"+File.separator+name;
+                    
+                    try
+                    {
+                        new File("pgn").mkdir();
+                    }
+                    catch(Exception e)
+                    {
+
+                    }
+                    
+                    try
+                    {
+                        new File(split_dir).mkdir();
+                    }
+                    catch(Exception e)
+                    {
+
+                    }
+                    
+                    if(!info.equals(""))
+                    {
+                        info="."+info;
+                    }
+                    
+                    String current_path=split_dir+File.separator+"game"+(cnt+1)+info+".pgn";
+                    info="";
+                    
+                    MyFile current_pgn_file=new MyFile(current_path);
+                    current_pgn_file.content=current_pgn;
+                    current_pgn_file.write_content();
+                    current_pgn="";
+                    cnt++;
+                    state=ST_LEAD;
+                }
+                else
+                {
+                    current_pgn+=line+"\n";
+                }
+            }
+            
+        }
+        
+        return (cnt>1);
+        
+    }
     
     public void set_from_fen(String fen)
     {
@@ -342,7 +503,6 @@ public class Game
 
                         // parse header fields
 
-                        Pattern get_header = Pattern.compile("\\[([^ ]+) \"([^\\\"]+)\\\"");
                         Matcher header_matcher = get_header.matcher(line);
 
                         if(header_matcher.find())
@@ -471,6 +631,8 @@ public class Game
                         token.contains(".")
                         ||
                         token.contains("*")
+                        ||
+                        token.contains("$")
                         ||
                         (
                             token.contains("-")
